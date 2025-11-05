@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "node --watch index.js",
-    "deploy:full": "git add . && git commit -m 'update' && git push"
+    "dev": "node --watch index.js"
   },
   "author": "Toni Sundqvist",
   "license": "MIT",

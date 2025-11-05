@@ -14,5 +14,4 @@ spec:
     spec:
       containers:
         - name: logoutput
-          image: log_output
-          imagePullPolicy: Never
+          image: sunqen/log_output
