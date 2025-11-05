@@ -1,0 +1,14 @@
+{
+  "name": "log-output-app",
+  "version": "1.0.0",
+  "description": "Minimal Node.js app that logs a random string every 5 seconds",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "deploy:full": "git add . && git commit -m 'update' && git push"
+  },
+  "author": "Toni Sundqvist",
+  "license": "MIT",
+  "dependencies": {}
+}
