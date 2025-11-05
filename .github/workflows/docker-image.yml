@@ -31,7 +31,7 @@ jobs:
         with:
           context: ./log_output
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/log-output:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/log_output:latest
 
       # 5. (Optional) Build and push other subprojects
       # - name: Build and push another-app image
