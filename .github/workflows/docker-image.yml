@@ -33,10 +33,10 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/log-output:latest
 
-      # 5. (Optional) Build and push todo-app
-      # - name: Build and push todo-app image
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: ./todo-app
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
+      # 5. Build and push todo-app
+      - name: Build and push todo-app image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./todo-app
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
