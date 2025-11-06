@@ -25,18 +25,27 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4. Build and push log-output
+      # 4. Extract short SHA
+      - name: Extract short SHA
+        id: vars
+        run: echo "sha_short=$(echo ${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
+
+      # 5. Build and push log-output
       - name: Build and push log-output image
         uses: docker/build-push-action@v6
         with:
           context: ./log-output
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/log-output:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/log-output:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/log-output:${{ steps.vars.outputs.sha_short }}
 
-      # 5. Build and push todo-app
+      # 6. Build and push todo-app
       - name: Build and push todo-app image
         uses: docker/build-push-action@v6
         with:
           context: ./todo-app
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:${{ steps.vars.outputs.sha_short }}
