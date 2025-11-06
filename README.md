@@ -4,4 +4,4 @@
 
 ### Chapter 2
 
-- [1.1.](https://github.com/sunkken/devops_kubernetes/tree/main/log_output)
+- [1.1.](https://github.com/sunkken/devops_kubernetes/tree/main/logoutputApp)

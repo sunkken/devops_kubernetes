@@ -25,18 +25,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4. Build and push log_output app
-      - name: Build and push log_output image
+      # 4. Build and push logoutputApp
+      - name: Build and push logoutputApp image
         uses: docker/build-push-action@v6
         with:
-          context: ./log_output
+          context: ./logoutputApp
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/log_output:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/logoutputApp:latest
 
-      # 5. (Optional) Build and push other subprojects
-      # - name: Build and push another-app image
+      # 5. (Optional) Build and push todoApp
+      # - name: Build and push todoApp image
       #   uses: docker/build-push-action@v6
       #   with:
-      #     context: ./another-app
+      #     context: ./todoApp
       #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/another-app:latest
+      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/todoApp:latest
