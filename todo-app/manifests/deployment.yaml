@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: todo-app
-          image: sunqen/todo-app:latest
+          image: sunqen/todo-app
           env:
             - name: PORT
               value: "3000"
