@@ -1,5 +1,4 @@
-# Ping-Pong App
-## (Deploys pingpong-app and log-output)
+# Ping-Pong App (Deploys pingpong-app and log-output)
 
 ## Open in your browser
 

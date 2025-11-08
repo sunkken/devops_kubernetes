@@ -8,6 +8,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app:
+          - log-output-writer
+          - log-output-reader
+          - todo-app
+          - pingpong-app
 
     steps:
       # 1. Checkout repository
@@ -30,48 +37,42 @@ jobs:
         id: vars
         run: echo "sha_short=$(echo ${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
 
-      # 5. Detect changed directories
+      # 5. Detect changed apps
       - name: Detect changed apps
         id: changes
         uses: dorny/paths-filter@v3
         with:
           filters: |
-            log_output:
-              - 'log-output/**'
-            todo_app:
+            log-output-writer:
+              - 'log-output/writer/**'
+            log-output-reader:
+              - 'log-output/reader/**'
+            todo-app:
               - 'todo-app/**'
-            pingpong_app:
+            pingpong-app:
               - 'pingpong-app/**'
 
-      # 6. Build and push log-output
-      - name: Build and push log-output image
-        if: steps.changes.outputs.log_output == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: ./log-output
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/log-output:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/log-output:${{ steps.vars.outputs.sha_short }}
+      # 6. Determine build context for each app
+      - name: Set build context
+        id: context
+        run: |
+          case "${{ matrix.app }}" in
+            "log-output-writer") echo "context=log-output/writer" >> $GITHUB_OUTPUT ;;
+            "log-output-reader") echo "context=log-output/reader" >> $GITHUB_OUTPUT ;;
+            *) echo "context=${{ matrix.app }}" >> $GITHUB_OUTPUT ;;
+          esac
 
-      # 7. Build and push todo-app
-      - name: Build and push todo-app image
-        if: steps.changes.outputs.todo_app == 'true'
+      # 7. Build and push image (only if that app changed)
+      - name: Build and push ${{ matrix.app }} image
+        if: steps.changes.outputs[matrix.app] == 'true'
         uses: docker/build-push-action@v6
         with:
-          context: ./todo-app
+          context: ${{ steps.context.outputs.context }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:${{ steps.vars.outputs.sha_short }}
-
-      # 8. Build and push pingpong-app
-      - name: Build and push pingpong-app image
-        if: steps.changes.outputs.pingpong_app == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: ./pingpong-app
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/pingpong-app:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/pingpong-app:${{ steps.vars.outputs.sha_short }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ steps.vars.outputs.sha_short }}
+          
+          # 🚀 Node.js caching optimization
+          cache-from: type=gha,scope=node-deps
+          cache-to: type=gha,mode=max,scope=node-deps

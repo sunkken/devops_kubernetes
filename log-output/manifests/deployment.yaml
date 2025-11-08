@@ -1,7 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: log-output
+  name: log-output-dep
+  labels:
+    app: log-output
 spec:
   replicas: 1
   selector:
@@ -12,6 +14,19 @@ spec:
       labels:
         app: log-output
     spec:
+      volumes:
+        - name: shared-logs
+          emptyDir: {}
       containers:
-        - name: log-output
-          image: sunqen/log-output:latest
+        - name: log-output-writer
+          image: sunqen/log-output-writer:latest
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /usr/src/app/logs
+        - name: log-output-reader
+          image: sunqen/log-output-reader:latest
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /usr/src/app/logs
