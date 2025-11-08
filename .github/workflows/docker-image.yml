@@ -49,3 +49,13 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:${{ steps.vars.outputs.sha_short }}
+
+      # 7. Build and push pingpong-app
+      - name: Build and push pingpong-app image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./pingpong-app
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/pingpong-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/pingpong-app:${{ steps.vars.outputs.sha_short }}
