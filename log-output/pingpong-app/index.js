@@ -3,10 +3,11 @@ const path = require('path')
 const express = require('express')
 const app = express()
 
-const LOG_FILE = path.join('/usr/src/app/logs', 'pingpong.log')
+const LOGS_DIR = process.env.LOGS_DIR || '/usr/src/app/logs'
+const LOG_FILE = path.join(LOGS_DIR, 'pingpong.log')
 
 // Ensure logs directory exists
-fs.mkdirSync(path.dirname(LOG_FILE), { recursive: true })
+fs.mkdirSync(LOGS_DIR, { recursive: true })
 
 // Load previous counter if file exists
 let counter = 0
@@ -17,9 +18,8 @@ if (fs.existsSync(LOG_FILE)) {
 
 app.get('/pingpong', (req, res) => {
   counter += 1
-  const message = `pong ${counter}`
-
   fs.writeFileSync(LOG_FILE, counter.toString()) // persist counter
+  const message = `pong ${counter}`
   console.log(message)
   res.send(message)
 })
