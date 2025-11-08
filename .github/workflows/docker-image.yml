@@ -30,8 +30,22 @@ jobs:
         id: vars
         run: echo "sha_short=$(echo ${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
 
-      # 5. Build and push log-output
+      # 5. Detect changed directories
+      - name: Detect changed apps
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            log_output:
+              - 'log-output/**'
+            todo_app:
+              - 'todo-app/**'
+            pingpong_app:
+              - 'pingpong-app/**'
+
+      # 6. Build and push log-output
       - name: Build and push log-output image
+        if: steps.changes.outputs.log_output == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ./log-output
@@ -40,8 +54,9 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/log-output:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/log-output:${{ steps.vars.outputs.sha_short }}
 
-      # 6. Build and push todo-app
+      # 7. Build and push todo-app
       - name: Build and push todo-app image
+        if: steps.changes.outputs.todo_app == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ./todo-app
@@ -50,8 +65,9 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:${{ steps.vars.outputs.sha_short }}
 
-      # 7. Build and push pingpong-app
+      # 8. Build and push pingpong-app
       - name: Build and push pingpong-app image
+        if: steps.changes.outputs.pingpong_app == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ./pingpong-app
