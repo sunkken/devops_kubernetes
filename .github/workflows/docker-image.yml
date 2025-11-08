@@ -13,8 +13,8 @@ jobs:
         app:
           - log-output-writer
           - log-output-reader
-          - todo-app
           - pingpong-app
+          - todo-app
 
     steps:
       # 1. Checkout repository
@@ -47,20 +47,23 @@ jobs:
               - 'log-output/writer/**'
             log-output-reader:
               - 'log-output/reader/**'
+            pingpong-app:
+              - 'log-output/pingpong-app/**'
             todo-app:
               - 'todo-app/**'
-            pingpong-app:
-              - 'pingpong-app/**'
 
-      # 6. Determine build context for each app
+      # 6. Dynamically set build context
       - name: Set build context
         id: context
         run: |
-          case "${{ matrix.app }}" in
-            "log-output-writer") echo "context=log-output/writer" >> $GITHUB_OUTPUT ;;
-            "log-output-reader") echo "context=log-output/reader" >> $GITHUB_OUTPUT ;;
-            *) echo "context=${{ matrix.app }}" >> $GITHUB_OUTPUT ;;
-          esac
+          declare -A CONTEXTS
+          CONTEXTS=(
+            ["log-output-writer"]="log-output/writer"
+            ["log-output-reader"]="log-output/reader"
+            ["pingpong-app"]="log-output/pingpong-app"
+            ["todo-app"]="todo-app"
+          )
+          echo "context=${CONTEXTS[${{ matrix.app }}]}" >> $GITHUB_OUTPUT
 
       # 7. Build and push image (only if that app changed)
       - name: Build and push ${{ matrix.app }} image
@@ -73,6 +76,6 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ steps.vars.outputs.sha_short }}
           
-          # 🚀 Node.js caching optimization
+          # Node.js caching optimization
           cache-from: type=gha,scope=node-deps
           cache-to: type=gha,mode=max,scope=node-deps

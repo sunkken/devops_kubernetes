@@ -14,9 +14,10 @@ spec:
       labels:
         app: log-output
     spec:
-      volumes:
+      volumes: # Define volume
         - name: shared-logs
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: shared-logs-claim # Reference the PVC
       containers:
         - name: log-output-writer
           image: sunqen/log-output-writer:latest
