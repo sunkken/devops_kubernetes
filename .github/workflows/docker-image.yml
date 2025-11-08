@@ -52,10 +52,13 @@ jobs:
             todo-app:
               - 'todo-app/**'
 
-      # 6. Debug: show which apps changed
-      - name: Show changed apps
+      # 6. Debug: show the outputs from paths-filter
+      - name: "Debug: show changed apps"
         run: |
-          echo "Changed apps: ${{ toJSON(steps.changes.outputs) }}"
+          echo "log-output-writer changed: ${{ steps.changes.outputs['log-output-writer'] }}"
+          echo "log-output-reader changed: ${{ steps.changes.outputs['log-output-reader'] }}"
+          echo "pingpong-app changed: ${{ steps.changes.outputs['pingpong-app'] }}"
+          echo "todo-app changed: ${{ steps.changes.outputs['todo-app'] }}"
 
       # 7. Dynamically set build context
       - name: Set build context
@@ -70,9 +73,9 @@ jobs:
           )
           echo "context=${CONTEXTS[${{ matrix.app }}]}" >> $GITHUB_OUTPUT
 
-      # 8. Build and push image only if that app changed
+      # 8. Build and push image only if app changed
       - name: Build and push ${{ matrix.app }} image
-        if: ${{ fromJSON(steps.changes.outputs)[matrix.app] == 'true' }}
+        if: ${{ steps.changes.outputs[matrix.app] == 'true' }}
         uses: docker/build-push-action@v6
         with:
           context: ${{ steps.context.outputs.context }}
