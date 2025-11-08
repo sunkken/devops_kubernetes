@@ -4,10 +4,11 @@
   "description": "Minimal Node.js app that logs a random string every 5 seconds",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js"
+    "start": "node index.js"
   },
   "author": "Toni Sundqvist",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
