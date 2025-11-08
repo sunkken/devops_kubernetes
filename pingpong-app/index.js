@@ -4,8 +4,8 @@ const app = express()
 let counter = 0
 
 app.get('/pingpong', (req, res) => {
-  const message = `pong ${counter}`
   counter += 1
+  const message = `pong ${counter}`
   res.send(message)
   console.log(message)
 })
