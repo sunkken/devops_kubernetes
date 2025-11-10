@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo App</title>
+</head>
+<body>
+  <h1>Todo App</h1>
+  <p>App is under construction</p>
+
+  <div id="image-section">
+    <img id="main-image" src="/image.jpg" alt="Random image" onerror="this.style.display='none'">
+    <p id="no-image" style="display:none;">No image yet</p>
+  </div>
+
+  <!-- Input form and button -->
+  <div>
+    <input id="todo-input" type="text" maxlength="140" placeholder="Enter a todo (max 140 chars)">
+    <button id="create-btn">Create todo</button>
+  </div>
+
+  <!-- Hardcoded todos -->
+  <ul id="todo-list">
+    <li>Learn JavaScript</li>
+    <li>Learn React</li>
+    <li>Build a project</li>
+  </ul>
+
+  <footer>DevOps with Kubernetes 2025</footer>
+
+  <script>
+    // Hide the <p>No image yet</p> if image exists
+    const img = document.getElementById('main-image')
+    img.addEventListener('error', () => {
+      img.style.display = 'none'
+      document.getElementById('no-image').style.display = 'block'
+    })
+
+    // Todo input functionality
+    const input = document.getElementById('todo-input')
+    const list = document.getElementById('todo-list')
+    const btn = document.getElementById('create-btn')
+
+    btn.addEventListener('click', () => {
+      const text = input.value.trim()
+      if (!text) return
+      if (text.length > 140) {
+        alert('Todo must be under 140 characters.')
+        return
+      }
+      const li = document.createElement('li')
+      li.textContent = text
+      list.appendChild(li)
+      input.value = ''
+    })
+  </script>
+</body>
+</html>

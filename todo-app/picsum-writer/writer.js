@@ -2,11 +2,14 @@ const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 
-const IMAGE_DIR = '/usr/src/app/image'
+const WORKDIR = process.env.WORKDIR || __dirname
+const IMAGE_DIR = path.join(WORKDIR, 'image')
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg')
+
 const IMAGE_URL = 'https://picsum.photos/200'
 const INTERVAL = 10 * 60 * 1000 // 10 minutes
 
+// Ensure image folder exists
 fs.mkdirSync(IMAGE_DIR, { recursive: true })
 
 async function downloadImage() {
@@ -24,6 +27,11 @@ function getFileAge() {
   return Date.now() - fs.statSync(IMAGE_PATH).mtimeMs
 }
 
+async function loop() {
+  await downloadImage()
+  setTimeout(loop, INTERVAL)
+}
+
 async function start() {
   const age = getFileAge()
   if (age > INTERVAL) {
@@ -35,11 +43,6 @@ async function start() {
     console.log(`Existing image age ${Math.round(age / 1000)}s, next update in ${Math.round(wait / 1000)}s`)
     setTimeout(loop, wait)
   }
-}
-
-async function loop() {
-  await downloadImage()
-  setTimeout(loop, INTERVAL)
 }
 
 console.log('Writer started')
