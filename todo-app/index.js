@@ -1,10 +1,9 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-
 const app = express()
 
-const IMAGE_DIR = path.join(__dirname, 'image')
+const IMAGE_DIR = '/usr/src/app/image'
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg')
 
 // Ensure image folder exists

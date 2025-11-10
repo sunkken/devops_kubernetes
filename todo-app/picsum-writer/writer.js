@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 
-const IMAGE_DIR = path.join(__dirname, '../image')
+const IMAGE_DIR = '/usr/src/app/image'
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg')
 const IMAGE_URL = 'https://picsum.photos/200'
 const INTERVAL = 10 * 60 * 1000 // 10 minutes
