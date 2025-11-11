@@ -4,7 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 
-const WORKDIR = process.env.WORKDIR || __dirname
+const WORKDIR = process.env.WORKDIR || path.resolve(__dirname, '..')
 const IMAGE_DIR = path.join(WORKDIR, 'image')
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg')
 

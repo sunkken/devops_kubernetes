@@ -1,0 +1,37 @@
+services:
+  todo-backend:
+    build:
+      context: ./todo-backend
+    container_name: todo-backend
+    environment:
+      - PORT=5000
+    ports:
+      - "5000:5000"
+
+  todo-app:
+    build:
+      context: ./todo-app
+    container_name: todo-app
+    environment:
+      - PORT=3000
+      - WORKDIR=/usr/src/app
+    volumes:
+      - image-volume:/usr/src/app/image
+    ports:
+      - "1234:3000"
+    depends_on:
+      - todo-backend
+
+  todo-app-writer:
+    build:
+      context: ./todo-app/picsum-writer
+    container_name: todo-app-writer
+    environment:
+      - WORKDIR=/usr/src/app
+    volumes:
+      - image-volume:/usr/src/app/image
+    depends_on:
+      - todo-app
+
+volumes:
+  image-volume:

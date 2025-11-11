@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo App</title>
+</head>
+<body>
+  <h1>Todo App</h1>
+  <p>App is under construction</p>
+
+  <div id="image-section">
+    <img id="main-image" src="/image.jpg" alt="Random image" onerror="this.style.display='none'">
+    <p id="no-image" style="display:none;">No image yet</p>
+  </div>
+
+  <!-- Input form and button -->
+  <div>
+    <input id="todo-input" type="text" maxlength="140" placeholder="Enter a todo (max 140 chars)">
+    <button id="create-btn">Create todo</button>
+  </div>
+
+  <!-- Hardcoded todos -->
+  <ul id="todo-list">
+    <li>Learn JavaScript</li>
+    <li>Learn React</li>
+    <li>Build a project</li>
+  </ul>
+
+  <footer>DevOps with Kubernetes 2025</footer>
+
+<script>
+const list = document.getElementById('todo-list')
+const input = document.getElementById('todo-input')
+const btn = document.getElementById('create-btn')
+
+// Fetch and render todos
+async function loadTodos() {
+  try {
+    const res = await fetch('/api/todos')
+    const todos = await res.json()
+    list.innerHTML = ''
+    todos.forEach(todo => {
+      const li = document.createElement('li')
+      li.textContent = todo.text
+      list.appendChild(li)
+    })
+  } catch (err) {
+    console.error('Failed to load todos', err)
+  }
+}
+
+// Create new todo
+btn.addEventListener('click', async () => {
+  const text = input.value.trim()
+  if (!text) return
+  if (text.length > 140) return alert('Todo must be under 140 characters.')
+  try {
+    const res = await fetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    })
+    if (!res.ok) throw new Error('Failed to create todo')
+    input.value = ''
+    loadTodos()
+  } catch (err) {
+    console.error(err)
+    alert('Error creating todo')
+  }
+})
+
+// Initial load
+loadTodos()
+</script>
+
+</body>
+</html>
