@@ -1,10 +1,15 @@
 const fs = require('fs')
 const path = require('path')
 
-const LOG_FILE = path.join('/usr/src/app/logs', 'logoutput.txt')
+require('dotenv').config()
+
+const WORKDIR = process.env.WORKDIR || __dirname
+const LOG_DIR = path.join(WORKDIR, 'logs')
+const LOG_FILE = path.join(LOG_DIR, 'logoutput.txt')
 const RANDOM_STRING = Math.random().toString(36).substring(2, 8)
 
 console.log(`Writer started. Random string: ${RANDOM_STRING}`)
+console.log(`Writing logs to: ${LOG_FILE}`)
 
 // Ensure logs directory exists
 fs.mkdirSync(path.dirname(LOG_FILE), { recursive: true })

@@ -4,11 +4,13 @@
   "description": "Minimal Node.js app that reads a log and serves it over HTTP",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
   "author": "Toni Sundqvist",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.1.0"
   }
 }
