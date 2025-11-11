@@ -13,6 +13,7 @@ jobs:
         app:
           - todo-app
           - todo-app-writer
+          - todo-backend
           - log-output
           - pingpong-app
 
@@ -47,8 +48,10 @@ jobs:
               - 'todo-app/**'
             todo-app-writer:
               - 'todo-app/picsum-writer/**'
+            todo-backend:
+              - 'todo-backend/**'
             log-output:
-              - 'log-output/**'   # now includes both reader and writer
+              - 'log-output/**'
             pingpong-app:
               - 'log-output/pingpong-app/**'
 
@@ -56,13 +59,17 @@ jobs:
       - name: Set build context
         id: context
         run: |
-          declare -A CONTEXTS=(
-            ["todo-app"]="todo-app"
-            ["todo-app-writer"]="todo-app/picsum-writer"
-            ["log-output"]="log-output"   # merged app
-            ["pingpong-app"]="log-output/pingpong-app"
-          )
-          echo "context=${CONTEXTS[${{ matrix.app }}]}" >> $GITHUB_OUTPUT
+          if [ "${{ matrix.app }}" = "todo-app" ]; then
+            echo "context=todo-app" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.app }}" = "todo-app-writer" ]; then
+            echo "context=todo-app/picsum-writer" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.app }}" = "todo-backend" ]; then
+            echo "context=todo-backend" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.app }}" = "log-output" ]; then
+            echo "context=log-output" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.app }}" = "pingpong-app" ]; then
+            echo "context=log-output/pingpong-app" >> $GITHUB_OUTPUT
+          fi
 
       # Build and push only if changed
       - name: Build and push ${{ matrix.app }} image
