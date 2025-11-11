@@ -5,31 +5,16 @@ services:
     container_name: pingpong-app
     environment:
       - PORT=3001
-      - WORKDIR=/usr/src/app
-    volumes:
-      - logs-volume:/usr/src/app/logs
     ports:
       - "3457:3001"
 
-  log-output-writer:
+  log-output:
     build:
-      context: ./writer
-    container_name: log-output-writer
-    environment:
-      - WORKDIR=/usr/src/app
-    volumes:
-      - logs-volume:/usr/src/app/logs
-
-  log-output-reader:
-    build:
-      context: ./reader
-    container_name: log-output-reader
+      context: .
+    container_name: log-output
     environment:
       - PORT=3000
       - WORKDIR=/usr/src/app
-    volumes:
-      - logs-volume:/usr/src/app/logs
+      - PINGPONG_URL=http://pingpong-app:3001/pings
     ports:
       - "3456:3000"
-volumes:
-  logs-volume:
