@@ -71,9 +71,9 @@ jobs:
             echo "context=log-output/pingpong-app" >> $GITHUB_OUTPUT
           fi
 
-      # Build and push only if changed
+      # Build and push only if changed OR if branch is main
       - name: Build and push ${{ matrix.app }} image
-        if: ${{ steps.changes.outputs[matrix.app] == 'true' }}
+        if: github.ref == 'refs/heads/main' || steps.changes.outputs[matrix.app] == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ${{ steps.context.outputs.context }}
