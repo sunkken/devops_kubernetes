@@ -1,4 +1,3 @@
-require('dotenv').config()
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
@@ -12,8 +11,9 @@ const INDEX_HTML = path.join(WORKDIR, 'index.html')
 // Ensure image folder exists
 fs.mkdirSync(IMAGE_DIR, { recursive: true })
 
-// Proxy /api requests only if not running in k3d
+// Only use proxy if NOT running in k3d
 const isK3d = process.env.K3D === 'true'
+
 if (!isK3d) {
   const { createProxyMiddleware } = require('http-proxy-middleware')
   const backendUrl = process.env.BACKEND_URL || 'http://todo-backend:5000'
@@ -25,10 +25,11 @@ if (!isK3d) {
   }))
 }
 
-// Serve main HTML file
-app.get('/', (req, res) => {
-  res.sendFile(INDEX_HTML)
-})
+// Serve static images
+app.use(express.static(IMAGE_DIR))
+
+// Serve main HTML
+app.get('/', (req, res) => res.sendFile(INDEX_HTML))
 
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`Todo-app running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Todo-app running on port ${PORT}, K3D=${isK3d}`))

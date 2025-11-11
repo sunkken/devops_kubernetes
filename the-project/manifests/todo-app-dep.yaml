@@ -36,3 +36,4 @@ spec:
               value: "http://todo-backend-svc:5000"
             - name: K3D
               value: "true"
+
