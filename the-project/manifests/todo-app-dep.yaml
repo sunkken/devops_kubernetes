@@ -14,10 +14,10 @@ spec:
       labels:
         app: todo-app
     spec:
-      volumes: # Define volume
+      volumes:
         - name: picsum-image
           persistentVolumeClaim:
-            claimName: picsum-image-claim # Reference the PVC
+            claimName: picsum-image-claim
       containers:
         - name: todo-app-writer
           image: sunqen/todo-app-writer:latest
@@ -31,3 +31,6 @@ spec:
           volumeMounts:
             - name: picsum-image
               mountPath: /usr/src/app/image
+          env:
+            - name: BACKEND_URL
+              value: "http://todo-backend-svc:5000"

@@ -15,9 +15,10 @@ fs.mkdirSync(IMAGE_DIR, { recursive: true })
 // Serve static images
 app.use(express.static(IMAGE_DIR))
 
-// Proxy /api requests to backend
+const backendUrl = process.env.BACKEND_URL || 'http://todo-backend:5000'
+
 app.use('/api', createProxyMiddleware({
-  target: 'http://todo-backend:5000',
+  target: backendUrl,
   changeOrigin: true,
   pathRewrite: { '^/api': '' }
 }))

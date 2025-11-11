@@ -15,6 +15,7 @@ services:
     environment:
       - PORT=3000
       - WORKDIR=/usr/src/app
+      - BACKEND_URL=http://todo-backend:5000
     volumes:
       - image-volume:/usr/src/app/image
     ports:
