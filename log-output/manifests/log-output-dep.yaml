@@ -14,20 +14,10 @@ spec:
       labels:
         app: log-output
     spec:
-      volumes: # Define volume
-        - name: shared-logs
-          persistentVolumeClaim:
-            claimName: shared-logs-claim # Reference the PVC
       containers:
         - name: log-output-writer
           image: sunqen/log-output-writer:latest
-          volumeMounts:
-            - name: shared-logs
-              mountPath: /usr/src/app/logs
         - name: log-output-reader
           image: sunqen/log-output-reader:latest
           ports:
             - containerPort: 3000
-          volumeMounts:
-            - name: shared-logs
-              mountPath: /usr/src/app/logs

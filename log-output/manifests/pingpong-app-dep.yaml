@@ -12,18 +12,11 @@ spec:
       labels:
         app: pingpong-app
     spec:
-      volumes: # Define volume
-        - name: shared-logs
-          persistentVolumeClaim:
-            claimName: shared-logs-claim # Reference the PVC
       containers:
         - name: pingpong-app
           image: sunqen/pingpong-app
           ports:
             - containerPort: 3001
-          volumeMounts:
-            - name: shared-logs
-              mountPath: /usr/src/app/logs
           env:
             - name: PORT
               value: "3001"
