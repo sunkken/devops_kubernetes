@@ -13,32 +13,31 @@ jobs:
         app:
           - todo-app
           - todo-app-writer
-          - log-output-writer
-          - log-output-reader
+          - log-output
           - pingpong-app
 
-    # Checkout repository
     steps:
+      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v5
 
-    # Set up Docker Buildx
+      # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-    # Log in to Docker Hub
+      # Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # Extract short SHA
+      # Extract short SHA
       - name: Extract short SHA
         id: vars
         run: echo "sha_short=$(echo ${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
 
-    # Detect changed apps dynamically
+      # Detect changed apps dynamically
       - name: Detect changed apps
         id: changes
         uses: dorny/paths-filter@v3
@@ -48,27 +47,24 @@ jobs:
               - 'todo-app/**'
             todo-app-writer:
               - 'todo-app/picsum-writer/**'
-            log-output-writer:
-              - 'log-output/writer/**'
-            log-output-reader:
-              - 'log-output/reader/**'
+            log-output:
+              - 'log-output/**'   # now includes both reader and writer
             pingpong-app:
               - 'log-output/pingpong-app/**'
 
-    # Set build context dynamically
+      # Set build context dynamically
       - name: Set build context
         id: context
         run: |
           declare -A CONTEXTS=(
             ["todo-app"]="todo-app"
             ["todo-app-writer"]="todo-app/picsum-writer"
-            ["log-output-writer"]="log-output/writer"
-            ["log-output-reader"]="log-output/reader"
+            ["log-output"]="log-output"   # merged app
             ["pingpong-app"]="log-output/pingpong-app"
           )
           echo "context=${CONTEXTS[${{ matrix.app }}]}" >> $GITHUB_OUTPUT
 
-    # Build and push only if changed
+      # Build and push only if changed
       - name: Build and push ${{ matrix.app }} image
         if: ${{ steps.changes.outputs[matrix.app] == 'true' }}
         uses: docker/build-push-action@v6

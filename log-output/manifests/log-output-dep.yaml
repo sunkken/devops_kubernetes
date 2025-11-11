@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: log-output-dep
+  name: log-output
   labels:
     app: log-output
 spec:
@@ -15,9 +15,12 @@ spec:
         app: log-output
     spec:
       containers:
-        - name: log-output-writer
-          image: sunqen/log-output-writer:latest
-        - name: log-output-reader
-          image: sunqen/log-output-reader:latest
+        - name: log-output
+          image: sunqen/log-output:latest
           ports:
             - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: PINGPONG_URL
+              value: "http://pingpong-app-svc:3457/pings"
