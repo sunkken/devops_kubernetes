@@ -21,4 +21,4 @@
 ### Chapter 3
 
 - [2.1.](https://github.com/sunkken/devops_kubernetes/tree/2.1/log-output)
-- [2.2.](https://github.com/sunkken/devops_kubernetes/tree/2.1/the-project)
+- [2.2.](https://github.com/sunkken/devops_kubernetes/tree/2.2/the-project)
