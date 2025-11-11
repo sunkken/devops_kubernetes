@@ -14,9 +14,9 @@ services:
     container_name: todo-app
     environment:
       - PORT=3000
-      - IMAGE_DIR=/usr/src/app/logs
+      - IMAGE_DIR=/usr/src/app/image
     volumes:
-      - image-volume:/usr/src/app/logs
+      - image-volume:/usr/src/app/image
     ports:
       - "1234:3000"
 volumes:
