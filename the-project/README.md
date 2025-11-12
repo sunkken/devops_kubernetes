@@ -1,9 +1,9 @@
 # The Project
 
 ## Setup
-- **Picsum Writer** (`todo-app-writer`) downloads a picture every 10 minutes from picsum lorum and writes it to persistent volume
-- **Todo Backend** (`log-output`) Provides todo-functionality
-- **Todo App** Serves todo frontend with picture.
+- **Picsum Writer** (`todo-app/picsum-writer`) downloads a random picture every 10 minutes from picsum lorum and writes it to persistent volume.
+- **Todo Backend** (`todo-backend`) Provides todo-functionality.
+- **Todo App** (`todo-app`) Serves todo frontend and current picture.
 
 ## Create Cluster
 ```bash

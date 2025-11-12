@@ -1,9 +1,8 @@
 # Shared Logging App (Ping-Pong + Log Output)
 
 ## Setup
-- **Ping-Pong App** (`pingpong-app`) writes a request counter to a shared volume.  
-- **Log Output** (`log-output`) appends timestamped random strings to another file in the same volume.  
-- **Reader** combines both outputs.
+- **Ping-Pong App** (`pingpong-app`) keeps a request counter in memory.  
+- **Log Output** (`log-output`) Serves frontend with timestamped random string and the counter from pingpong-app.
 
 ## Create Cluster
 ```bash
