@@ -1,15 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dwk-material-ingress
+  name: images-ingress
 spec:
   rules:
   - http:
       paths:
-      - path: /
+      - path: /examples/images
         pathType: Prefix
         backend:
           service:
             name: images-svc
             port: 
-              number: 2345
+              number: 2346

@@ -3,21 +3,20 @@ kind: Ingress
 metadata:
   namespace: exercises
   name: dwk-exercises-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: exercises-logoutput-strip@kubernetescrd
 spec:
   rules:
   - http:
       paths:
-      # Log output app route
-      - path: /
+      - path: /logoutput
         pathType: Prefix
         backend:
           service:
             name: log-output-svc
             port:
               number: 3456
-
-      # Ping-pong app route
-      - path: /pingpong
+      - path: /logoutput/pingpong
         pathType: Prefix
         backend:
           service:
