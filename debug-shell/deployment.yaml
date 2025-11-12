@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: debug-ubuntu
+  namespace: exercises
+  name: debug-shell
   labels:
     app: debug
 spec:
@@ -15,7 +16,7 @@ spec:
         app: debug
     spec:
       containers:
-        - name: debug-shell
+        - name: debug-bash-curl
           image: sunqen/debug-bash-curl:bookworm-slim
           command: ["/bin/bash", "-c", "sleep infinity"]
           stdin: true

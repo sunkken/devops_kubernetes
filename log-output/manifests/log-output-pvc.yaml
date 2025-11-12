@@ -1,9 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: picsum-image-claim
+  namespace: exercises
+  name: log-output-claim
 spec:
-  storageClassName: image-pv-storage
+  storageClassName: local-logs
   accessModes:
     - ReadWriteOnce
   resources:
