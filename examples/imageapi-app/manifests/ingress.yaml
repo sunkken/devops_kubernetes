@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: imageapi-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /examples/imageapi
+        pathType: Prefix
+        backend:
+          service:
+            name: imageapi-svc
+            port:
+              number: 2457

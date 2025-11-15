@@ -4,7 +4,7 @@ services:
       context: ./pingpong-app
     container_name: pingpong-app
     environment:
-      - PORT=3001
+      PORT: 3001
     ports:
       - "3457:3001"
 
@@ -13,8 +13,9 @@ services:
       context: .
     container_name: log-output
     environment:
-      - PORT=3000
-      - WORKDIR=/usr/src/app
-      - PINGPONG_URL=http://pingpong-app:3001/pings
+      PORT: 3000
+      WORKDIR: /usr/src/app
+      PINGPONG_URL: http://pingpong-app:3001/pings
+      MESSAGE: "hello world"
     ports:
       - "3456:3000"

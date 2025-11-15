@@ -1,19 +1,36 @@
 const express = require('express')
 const axios = require('axios')
+const fs = require('fs')
 require('dotenv').config()
 
 const app = express()
 
-// ---- Configuration / constants ----
+// ---- Configuration ----
+const PORT = process.env.PORT || 3000
 const PINGPONG_URL = process.env.PINGPONG_URL || 'http://pingpong-app:3001/pings'
+const MESSAGE = process.env.MESSAGE || 'MESSAGE not set'
+
+// ---- Read ConfigMap file ----
+function readFileContent() {
+  const path =
+    fs.existsSync('/config/information.txt')
+      ? '/config/information.txt'
+      : 'env/information.txt'
+
+  try {
+    return fs.readFileSync(path, 'utf8').trim()
+  } catch {
+    return 'File not found'
+  }
+}
+
+const fileContent = readFileContent()
 
 // ---- Writer setup ----
 const RANDOM_STRING = Math.random().toString(36).substring(2, 8)
 console.log(`Writer started. Random string: ${RANDOM_STRING}`)
 
-// In-memory log storage
 const logLines = []
-
 setInterval(() => {
   const line = `${new Date().toISOString()} ${RANDOM_STRING}`
   logLines.push(line)
@@ -32,9 +49,15 @@ app.get('/', async (req, res) => {
     pingPongCount = 'Pingpong service not reachable'
   }
 
-  res.type('text/plain').send(`${logOutputLine}\n${pingPongCount}`)
+const output = `
+file content: ${fileContent}
+env variable: MESSAGE=${MESSAGE}
+${logOutputLine}
+${pingPongCount}
+`.trim()
+
+res.type('text/plain').send(output)
 })
 
 // ---- Start server ----
-const PORT = process.env.PORT || 3000
 app.listen(PORT, () => console.log(`Reader+Writer server listening on port ${PORT}`))

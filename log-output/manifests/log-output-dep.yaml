@@ -25,3 +25,20 @@ spec:
               value: "3000"
             - name: PINGPONG_URL
               value: "http://pingpong-app-svc:3457/pings"
+            - name: MESSAGE
+              valueFrom: 
+                configMapKeyRef:
+                  name: log-config
+                  key: MESSAGE
+              
+          volumeMounts:
+            - name: info-file
+              mountPath: "/config"
+                
+      volumes:
+        - name: info-file
+          configMap:
+            name: log-config
+            items:
+              - key: information.txt
+                path: information.txt
