@@ -1,10 +1,5 @@
-# Use lightweight Debian
-FROM debian:bookworm-slim
+FROM alpine
 
-# Install curl (bash is already included)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl bash bind-tools iputils
 
-# Keep the container running with interactive bash
-CMD ["bash"]
+CMD ["bash", "-c", "while true; do sleep 3600; done"]

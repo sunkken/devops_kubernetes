@@ -1,23 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: exercises
   name: debug-shell
   labels:
-    app: debug
+    app: debug-shell
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: debug
+      app: debug-shell
   template:
     metadata:
       labels:
-        app: debug
+        app: debug-shell
     spec:
       containers:
-        - name: debug-bash-curl
-          image: sunqen/debug-bash-curl:bookworm-slim
-          command: ["/bin/bash", "-c", "sleep infinity"]
-          stdin: true
-          tty: true
+      - name: debug-shell
+        image: sunqen/debug-shell:latest
+        imagePullPolicy: Always
+        command: ["bash", "-c"]
+        args:
+          - |
+            echo "Starting debug shell..."
+            while true; do sleep 3600; done
+        tty: true
+        stdin: true
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
