@@ -2,7 +2,7 @@ services:
   pingpong-app:
     build:
       context: ./pingpong-app
-    container_name: pingpong-app
+    container_name: sunqen/pingpong-app
     environment:
       PORT: 3001
     ports:
@@ -11,7 +11,7 @@ services:
   log-output:
     build:
       context: .
-    container_name: log-output
+    container_name: sunqen/log-output
     environment:
       PORT: 3000
       WORKDIR: /usr/src/app

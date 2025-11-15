@@ -1,15 +1,16 @@
-require('dotenv').config()
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 
 const fs = require('fs')
-const path = require('path')
 const axios = require('axios')
 
-const WORKDIR = process.env.WORKDIR || path.resolve(__dirname, '..')
+// Use environment variables if provided, otherwise fallback to current defaults
+const WORKDIR = process.env.TODO_APP_WORKDIR || process.env.TODO_APP_WORKDIR_LOCAL
 const IMAGE_DIR = path.join(WORKDIR, 'image')
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg')
 
-const IMAGE_URL = 'https://picsum.photos/200'
-const INTERVAL = 10 * 60 * 1000 // 10 minutes
+const IMAGE_URL = process.env.IMAGE_URL || 'https://picsum.photos/200'
+const INTERVAL = parseInt(process.env.IMAGE_INTERVAL_MS, 10) || 10 * 60 * 1000 // 10 minutes
 
 // Ensure image folder exists
 fs.mkdirSync(IMAGE_DIR, { recursive: true })

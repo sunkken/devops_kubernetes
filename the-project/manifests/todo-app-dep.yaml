@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: project
   name: todo-app-dep
   labels:
     app: todo-app
@@ -25,6 +24,9 @@ spec:
           volumeMounts:
             - name: image-storage
               mountPath: /usr/src/app/image
+          envFrom:
+          - configMapRef:
+              name: todo-config
         - name: todo-app
           image: sunqen/todo-app:latest
           ports:
@@ -32,6 +34,6 @@ spec:
           volumeMounts:
             - name: image-storage
               mountPath: /usr/src/app/image
-          env:
-            - name: BACKEND_URL
-              value: "http://todo-backend-svc:5000"
+          envFrom:
+            - configMapRef:
+                name: todo-config

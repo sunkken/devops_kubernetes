@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: project
   name: todo-backend-dep
   labels:
     app: todo-backend
@@ -20,6 +19,6 @@ spec:
           image: sunqen/todo-backend:latest
           ports:
             - containerPort: 5000
-          env:
-            - name: PORT
-              value: "5000"
+          envFrom:
+            - configMapRef:
+                name: todo-config

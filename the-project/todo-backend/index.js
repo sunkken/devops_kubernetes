@@ -1,10 +1,15 @@
-// todo-backend/index.js
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const express = require('express')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 
 const app = express()
 app.use(bodyParser.json())
+
+const PORT = process.env.TODO_BACKEND_PORT
+
+if (!PORT) throw new Error('PORT environment variable is required')
 
 morgan.token('body', req => JSON.stringify(req.body))
 app.use(
@@ -42,5 +47,4 @@ app.post('/todos', (req, res) => {
   res.status(201).json(newTodo)
 })
 
-const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Todo-backend running on port ${PORT}`))
