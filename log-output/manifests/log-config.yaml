@@ -12,3 +12,9 @@ data:
   MESSAGE: "hello world"
   information.txt: |
     this text is from file
+  PG_HOST: "logdb"
+  PG_PORT: "5432"
+  PG_USER: "loguser"
+  PG_PASSWORD: "logpass"
+  PG_DB: "logdb"
+  USE_DB: "true"

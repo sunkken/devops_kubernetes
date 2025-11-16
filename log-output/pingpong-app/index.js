@@ -6,6 +6,12 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express')
 const { Pool } = require('pg')
 
+const requiredVars = ['PG_HOST', 'PG_PORT', 'PG_USER', 'PG_PASSWORD', 'PG_DB', 'USE_DB']
+const missing = requiredVars.filter(v => !process.env[v])
+if (missing.length) {
+  console.warn(`Running without database, missing env vars: ${missing.join(', ')}`)
+}
+
 const app = express()
 let counter = 0
 let lastDbError = false // <-- track DB error
