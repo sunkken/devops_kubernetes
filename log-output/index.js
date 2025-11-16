@@ -46,7 +46,14 @@ app.get('/', async (req, res) => {
   let pingPongCount = 'Ping / Pongs: 0'
   try {
     const response = await axios.get(PINGPONG_URL, { timeout: 500 })
-    pingPongCount = `Ping / Pongs: ${response.data}`
+    const data = response.data
+
+    // Check DB Connection before giving counter
+    if (data.db_ok === false) {
+      pingPongCount = 'Pingpong DB not updated / connection issue!'
+    } else {
+      pingPongCount = `Ping / Pongs: ${data.counter}`
+    }
   } catch {
     pingPongCount = 'Pingpong service not reachable'
   }
