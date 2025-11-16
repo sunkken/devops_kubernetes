@@ -16,8 +16,9 @@ spec:
       containers:
         - name: pingpong-app
           image: sunqen/pingpong-app
+          imagePullPolicy: Always
           ports:
             - containerPort: 3001
-          env:
-            - name: PORT
-              value: "3001"
+          envFrom:
+          - configMapRef:
+              name: log-config

@@ -8,7 +8,7 @@ data:
   WORKDIR: "/usr/src/app"
   LOG_PORT: "3000"
   PINGPONG_PORT: "3001"
-  PINGPONG_URL: "http://pingpong-app-svc:3001/pings"
+  PINGPONG_URL: "http://pingpong-app-svc:3457/pings"
   MESSAGE: "hello world"
   information.txt: |
     this text is from file

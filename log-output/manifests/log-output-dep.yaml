@@ -18,23 +18,15 @@ spec:
       containers:
         - name: log-output
           image: sunqen/log-output:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
-          env:
-            - name: PORT
-              value: "3000"
-            - name: PINGPONG_URL
-              value: "http://pingpong-app-svc:3457/pings"
-            - name: MESSAGE
-              valueFrom: 
-                configMapKeyRef:
-                  name: log-config
-                  key: MESSAGE
-              
           volumeMounts:
             - name: info-file
               mountPath: "/config"
-                
+          envFrom:
+          - configMapRef:
+              name: log-config      
       volumes:
         - name: info-file
           configMap:

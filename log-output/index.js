@@ -69,4 +69,4 @@ res.type('text/plain').send(output)
 })
 
 // ---- Start server ----
-app.listen(PORT, () => console.log(`Reader+Writer server listening on port ${PORT}`))
+app.listen(PORT, () => console.log(`log-output listening on port ${PORT}`))

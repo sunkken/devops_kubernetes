@@ -45,6 +45,7 @@ app.get('/pingpong', async (req, res) => {
     try {
       await db.query('UPDATE pingpong_counter SET pings=$1 WHERE id=1', [counter])
       lastDbError = false
+      console.log(`DB updated successfully: pings=${counter}`)
     } catch (err) {
       console.error('DB update failed:', err.message)
       lastDbError = true
