@@ -1,11 +1,13 @@
 const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
+}
 
 const fs = require('fs')
 const axios = require('axios')
 
 // Use environment variables if provided, otherwise fallback to current defaults
-const WORKDIR = process.env.TODO_APP_WORKDIR || process.env.TODO_APP_WORKDIR_LOCAL
+const WORKDIR = process.env.WORKDIR || process.env.WORKDIR_LOCAL
 const IMAGE_DIR = path.join(WORKDIR, 'image')
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg')
 

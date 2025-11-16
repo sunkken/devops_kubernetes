@@ -1,0 +1,21 @@
+# Node dependencies
+node_modules
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Git and editor stuff
+.git
+.gitignore
+.vscode
+.idea
+
+# Frontend dev files
+client/
+
+# OS junk
+.DS_Store

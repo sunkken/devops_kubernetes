@@ -3,7 +3,8 @@ kind: ConfigMap
 metadata:
   name: todo-config
 data:
+  NODE_ENV: "production"
+  WORKDIR: "/usr/src/app"
   TODO_APP_PORT: "3000"
   TODO_BACKEND_PORT: "5000"
-  TODO_APP_WORKDIR: "/usr/src/app"
   TODO_BACKEND_URL: "http://todo-backend-svc:5000"

@@ -2,20 +2,22 @@ services:
   pingpong-app:
     build:
       context: ./pingpong-app
-    container_name: sunqen/pingpong-app
+    image: sunqen/pingpong-app:latest
+    env_file:
+      - .env
     environment:
-      PORT: 3001
+      NODE_ENV: production
     ports:
       - "3457:3001"
 
   log-output:
     build:
       context: .
-    container_name: sunqen/log-output
+    image: sunqen/log-output
+    env_file:
+      - .env
     environment:
-      PORT: 3000
-      WORKDIR: /usr/src/app
-      PINGPONG_URL: http://pingpong-app:3001/pings
-      MESSAGE: "hello world"
+      NODE_ENV: production
     ports:
       - "3456:3000"
+      

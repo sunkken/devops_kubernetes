@@ -4,6 +4,11 @@ metadata:
   namespace: exercises
   name: log-config
 data:
+  NODE_ENV: "production"
+  WORKDIR: "/usr/src/app"
+  LOG_PORT: "3000"
+  PINGPONG_PORT: "3001"
+  PINGPONG_URL: "http://pingpong-app-svc:3001/pings"
   MESSAGE: "hello world"
   information.txt: |
     this text is from file

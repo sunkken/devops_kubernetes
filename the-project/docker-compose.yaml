@@ -5,6 +5,8 @@ services:
     image: sunqen/todo-backend:latest
     env_file:
       - .env
+    environment:
+      NODE_ENV: production
     ports:
       - "5000:5000"
 
@@ -13,9 +15,8 @@ services:
       context: ./todo-app
     image: sunqen/todo-app:latest
     environment:
-      TODO_APP_PORT: 3000
-      TODO_APP_WORKDIR: /usr/src/app
-      TODO_APP_BACKEND_URL: http://todo-backend:5000
+      NODE_ENV: production
+      WORKDIR: /usr/src/app
     volumes:
       - image-volume:/usr/src/app/image
     env_file:
@@ -30,7 +31,8 @@ services:
       context: ./todo-app/picsum-writer
     image: sunqen/todo-app-writer:latest
     environment:
-      TODO_APP_WORKDIR: /usr/src/app
+      NODE_ENV: production
+      WORKDIR: /usr/src/app
     volumes:
       - image-volume:/usr/src/app/image
     env_file:

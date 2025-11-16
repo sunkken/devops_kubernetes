@@ -1,13 +1,15 @@
 const express = require('express')
 const axios = require('axios')
 const fs = require('fs')
-require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 const app = express()
 
 // ---- Configuration ----
-const PORT = process.env.PORT || 3000
-const PINGPONG_URL = process.env.PINGPONG_URL || 'http://pingpong-app:3001/pings'
+const PORT = process.env.LOG_PORT
+const PINGPONG_URL = process.env.PINGPONG_URL
 const MESSAGE = process.env.MESSAGE || 'MESSAGE not set'
 
 // ---- Read ConfigMap file ----

@@ -1,5 +1,9 @@
+const path = require('path')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
+}
+
 const express = require('express')
-require('dotenv').config()
 
 const app = express()
 
@@ -18,5 +22,5 @@ app.get('/pings', (req, res) => {
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PINGPONG_PORT
 app.listen(PORT, () => console.log(`Pingpong app running on port ${PORT}`))

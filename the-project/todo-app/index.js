@@ -1,5 +1,7 @@
 const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
+}
 
 const express = require('express')
 const fs = require('fs')
@@ -7,7 +9,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware')
 
 const app = express()
 
-const WORKDIR = process.env.TODO_APP_WORKDIR || process.env.TODO_APP_WORKDIR_LOCAL
+const WORKDIR = process.env.WORKDIR || process.env.WORKDIR_LOCAL
 const IMAGE_DIR = path.join(WORKDIR, 'image')
 const INDEX_HTML = path.join(WORKDIR, 'index.html')
 
