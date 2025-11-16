@@ -21,6 +21,7 @@ spec:
       containers:
         - name: todo-app-writer
           image: sunqen/todo-app-writer:latest
+          imagePullPolicy: Always
           volumeMounts:
             - name: image-storage
               mountPath: /usr/src/app/image
@@ -29,6 +30,7 @@ spec:
               name: todo-config
         - name: todo-app
           image: sunqen/todo-app:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           volumeMounts:

@@ -17,6 +17,7 @@ spec:
       containers:
         - name: todo-backend
           image: sunqen/todo-backend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           envFrom:

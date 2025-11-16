@@ -9,7 +9,7 @@ data:
   TODO_BACKEND_PORT: "5000"
   TODO_BACKEND_URL: "http://todo-backend-svc:5000"
   TODO_DB_HOST: "tododb-svc"
-  TODO_DB_PORT: "5678"
+  TODO_DB_PORT: "5432"
   TODO_DB_NAME: "tododb"
   TODO_DB_USER: "todouser"
   TODO_DB_PASS: "todopass"

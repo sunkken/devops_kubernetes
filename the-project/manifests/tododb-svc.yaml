@@ -4,8 +4,8 @@ metadata:
   name: tododb-svc
 spec:
   ports:
-    - port: 5678
-      targetPort: 5678
+    - port: 5432
+      targetPort: 5432
   clusterIP: None
   selector:
     app: tododb

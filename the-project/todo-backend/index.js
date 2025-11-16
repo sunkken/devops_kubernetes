@@ -32,7 +32,7 @@ app.use(
   })
 )
 
-// ---- In-memory todos ----
+// ---- In-memory fallback todos ----
 let todos = [
   { id: 1, text: 'Learn JavaScript' },
   { id: 2, text: 'Learn React' },
@@ -43,7 +43,7 @@ let todos = [
 const dbVars = ['TODO_DB_HOST', 'TODO_DB_PORT', 'TODO_DB_USER', 'TODO_DB_PASS', 'TODO_DB_NAME']
 const missingVars = dbVars.filter(v => !process.env[v])
 
-let db
+let db = null
 let usingDb = false
 
 if (missingVars.length) {
@@ -57,7 +57,6 @@ if (missingVars.length) {
     database: process.env.TODO_DB_NAME,
   })
 
-  // Attempt to load todos from DB immediately
   db.query('SELECT * FROM todos ORDER BY id ASC')
     .then(res => {
       if (res.rows.length) {
@@ -75,31 +74,53 @@ if (missingVars.length) {
 }
 
 // ---- Endpoints ----
-app.get('/todos', (req, res) => res.json(todos))
+
+// Return ONLY DB todos if DB is active, otherwise return fallback todos
+app.get('/todos', async (req, res) => {
+  if (usingDb && db) {
+    try {
+      const result = await db.query('SELECT * FROM todos ORDER BY id ASC')
+      return res.json(result.rows)
+    } catch (err) {
+      console.error('DB read failed:', err.message)
+    }
+  }
+  return res.json(todos)
+})
 
 app.post('/todos', async (req, res) => {
   const { text } = req.body
   if (!text || !text.trim()) return res.status(400).json({ error: 'Todo text required' })
 
-  let newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text: text.trim() }
+  const cleanText = text.trim()
 
+  // DB path
   if (db) {
     try {
-      const result = await db.query('INSERT INTO todos (text) VALUES ($1) RETURNING *', [text.trim()])
-      newTodo = result.rows[0]
+      const result = await db.query(
+        'INSERT INTO todos (text) VALUES ($1) RETURNING *',
+        [cleanText]
+      )
+      const newTodo = result.rows[0]
       usingDb = true
       console.log('Inserted into DB:', newTodo)
+      return res.status(201).json(newTodo)
     } catch (err) {
       console.error('DB insert failed:', err.message)
       if (!usingDb) console.log('Using in-memory todos only.')
     }
   }
 
+  // In-memory fallback
+  const newTodo = {
+    id: todos.length ? todos[todos.length - 1].id + 1 : 1,
+    text: cleanText
+  }
   todos.push(newTodo)
   res.status(201).json(newTodo)
 })
 
-// Optional endpoint to check DB status
+// DB status endpoint
 app.get('/todos/status', (req, res) => {
   res.json({ todos_count: todos.length, db_connected: usingDb })
 })
