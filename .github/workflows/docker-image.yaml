@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  APP_LIST: "todo-app todo-app-writer todo-backend todo-cronjob log-output pingpong-app"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,6 +17,7 @@ jobs:
           - todo-app
           - todo-app-writer
           - todo-backend
+          - todo-cronjob
           - log-output
           - pingpong-app
 
@@ -50,6 +54,8 @@ jobs:
               - 'the-project/todo-app/picsum-writer/**'
             todo-backend:
               - 'the-project/todo-backend/**'
+            todo-cronjob:
+              - 'the-project/todo-cronjob/**'
             log-output:
               - 'log-output/**'
             pingpong-app:
@@ -59,27 +65,23 @@ jobs:
       - name: Set build context
         id: context
         run: |
-          if [ "${{ matrix.app }}" = "todo-app" ]; then
-            echo "context=the-project/todo-app" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.app }}" = "todo-app-writer" ]; then
-            echo "context=the-project/todo-app/picsum-writer" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.app }}" = "todo-backend" ]; then
-            echo "context=the-project/todo-backend" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.app }}" = "log-output" ]; then
-            echo "context=log-output" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.app }}" = "pingpong-app" ]; then
-            echo "context=log-output/pingpong-app" >> $GITHUB_OUTPUT
-          fi
+          declare -A CONTEXTS=(
+            [todo-app]="the-project/todo-app"
+            [todo-app-writer]="the-project/todo-app/picsum-writer"
+            [todo-backend]="the-project/todo-backend"
+            [todo-cronjob]="the-project/todo-cronjob"
+            [log-output]="log-output"
+            [pingpong-app]="log-output/pingpong-app"
+          )
+
+          echo "context=${CONTEXTS[${{ matrix.app }}]}" >> $GITHUB_OUTPUT
 
       # Always print what was detected — helpful for debugging
       - name: Debug detected changes and context
         run: |
-          echo "Detected changes:"
-          echo "todo-app: ${{ steps.changes.outputs.todo-app }}"
-          echo "todo-app-writer: ${{ steps.changes.outputs.todo-app-writer }}"
-          echo "todo-backend: ${{ steps.changes.outputs.todo-backend }}"
-          echo "log-output: ${{ steps.changes.outputs.log-output }}"
-          echo "pingpong-app: ${{ steps.changes.outputs.pingpong-app }}"
+          for app in $APP_LIST; do
+            echo "$app: ${{ steps.changes.outputs[app] }}"
+          done
           echo ""
           echo "Build context for this job: ${{ steps.context.outputs.context }}"
 
@@ -96,7 +98,7 @@ jobs:
           cache-from: type=gha,scope=node-deps
           cache-to: type=gha,mode=max,scope=node-deps
 
-      # ✅ Print summary of pushed images for this job
+      # Print summary of pushed images for this job
       - name: Summary of pushed images
         run: |
           echo "----------------------------------------------------"

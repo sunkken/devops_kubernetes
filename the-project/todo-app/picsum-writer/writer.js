@@ -6,7 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 const fs = require('fs')
 const axios = require('axios')
 
-// Use environment variables if provided, otherwise fallback to current defaults
+// Use environment variables if provided, otherwise fallback to defaults
 const WORKDIR = process.env.WORKDIR || process.env.WORKDIR_LOCAL
 const IMAGE_DIR = path.join(WORKDIR, 'image')
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg')
@@ -37,7 +37,7 @@ async function loop() {
   setTimeout(loop, INTERVAL)
 }
 
-async function start() {
+async function main() {
   const age = getFileAge()
   if (age > INTERVAL) {
     console.log('Old or missing image, downloading immediately')
@@ -51,4 +51,4 @@ async function start() {
 }
 
 console.log('Writer started')
-start()
+main()

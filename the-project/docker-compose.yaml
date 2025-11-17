@@ -40,5 +40,17 @@ services:
     depends_on:
       - todo-app
 
+  todo-cronjob:
+    build:
+      context: ./todo-cronjob
+    image: sunqen/todo-cronjob:latest
+    environment:
+      NODE_ENV: production
+    env_file:
+      - .env
+    depends_on:
+      - todo-backend
+    command: ["node", "index.js"]
+
 volumes:
   image-volume:
