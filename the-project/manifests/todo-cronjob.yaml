@@ -4,6 +4,8 @@ metadata:
   name: todo-random-wiki-cron
 spec:
   schedule: "0 * * * *"   # every hour
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 2
   jobTemplate:
     spec:
       template:

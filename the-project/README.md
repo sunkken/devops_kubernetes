@@ -1,9 +1,16 @@
 # The Project
 
-## Setup
-- **Picsum Writer** (`todo-app/picsum-writer`) downloads a random picture every 10 minutes from picsum lorum and writes it to persistent volume.
-- **Todo Backend** (`todo-backend`) Provides todo-functionality.
-- **Todo App** (`todo-app`) Serves todo frontend and current picture.
+## Setup Overview
+* **Picsum Writer** (`todo-app/picsum-writer`)
+  Downloads a random picture every 10 minutes from Picsum Lorem and writes it to a persistent volume.
+* **Todo Backend** (`todo-backend`)
+  Provides todo functionality and stores todos either in memory or in Postgres.
+* **Todo App** (`todo-app`)
+  Serves the todo frontend and current picture.
+* **Todo CronJob** (`todo-cronjob`)
+  Automatically generates a random "Read <Wikipedia URL>" todo every hour and posts it to the backend.
+* **Postgres Database** (`tododb`)
+  StatefulSet that stores todos persistently.
 
 ## Create Cluster
 ```bash
@@ -16,7 +23,7 @@ docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/image
 kubectl apply -f persistent-volumes/
 ```
 
-## Deploy Apps
+## Deploy Apps and Database
 ```bash
 kubectl apply -f manifests/
 ```
