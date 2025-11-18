@@ -5,16 +5,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express')
 const morgan = require('morgan')
-const bodyParser = require('body-parser')
 const { Pool } = require('pg')
 
 const app = express()
-app.use(bodyParser.json())
+app.use(express.json())
 
-const PORT = process.env.TODO_BACKEND_PORT
-if (!PORT) throw new Error('TODO_BACKEND_PORT environment variable is required')
-
-// ---- Logging ----
+// ---- Morgan logging ----
 morgan.token('body', req => JSON.stringify(req.body))
 app.use(
   morgan((tokens, req, res) => {
@@ -73,56 +69,100 @@ if (missingVars.length) {
     })
 }
 
-// ---- Endpoints ----
+// ---- Async helper ----
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next)
+}
 
-// Return ONLY DB todos if DB is active, otherwise return fallback todos
-app.get('/todos', async (req, res) => {
+// ---- Storage helpers ----
+const getAllTodos = async () => {
   if (usingDb && db) {
-    try {
-      const result = await db.query('SELECT * FROM todos ORDER BY id ASC')
-      return res.json(result.rows)
-    } catch (err) {
-      console.error('DB read failed:', err.message)
-    }
+    const result = await db.query('SELECT * FROM todos ORDER BY id ASC')
+    return result.rows
   }
-  return res.json(todos)
+  return todos
+}
+
+const getTodoById = async (id) => {
+  if (usingDb && db) {
+    const result = await db.query('SELECT * FROM todos WHERE id = $1', [id])
+    return result.rows[0] || null
+  }
+  return todos.find(t => t.id === id) || null
+}
+
+const createTodo = async (text) => {
+  if (usingDb && db) {
+    const result = await db.query('INSERT INTO todos (text) VALUES ($1) RETURNING *', [text])
+    return result.rows[0]
+  }
+  const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text }
+  todos.push(newTodo)
+  return newTodo
+}
+
+const deleteTodoById = async (id) => {
+  if (usingDb && db) {
+    const result = await db.query('DELETE FROM todos WHERE id = $1 RETURNING *', [id])
+    return result.rows[0] || null
+  }
+  const index = todos.findIndex(t => t.id === id)
+  if (index === -1) return null
+  return todos.splice(index, 1)[0]
+}
+
+// ---- Routes ----
+app.get('/todos/status', (req, res) => {
+  res.status(200).json({ todos_count: todos.length, db_connected: usingDb })
 })
 
-app.post('/todos', async (req, res) => {
+app.get('/todos', asyncHandler(async (req, res) => {
+  const allTodos = await getAllTodos()
+  res.status(200).json(allTodos)
+}))
+
+app.get('/todos/:id', asyncHandler(async (req, res) => {
+  const id = Number(req.params.id)
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' })
+
+  const todo = await getTodoById(id)
+  if (!todo) return res.status(404).json({ error: 'Todo not found' })
+  res.status(200).json(todo)
+}))
+
+app.post('/todos', asyncHandler(async (req, res) => {
   const { text } = req.body
   if (!text || !text.trim()) return res.status(400).json({ error: 'Todo text required' })
+  if (text.trim().length > 140) return res.status(400).json({ error: 'Todo text cannot exceed 140 characters' })
 
-  const cleanText = text.trim()
-
-  // DB path
-  if (db) {
-    try {
-      const result = await db.query(
-        'INSERT INTO todos (text) VALUES ($1) RETURNING *',
-        [cleanText]
-      )
-      const newTodo = result.rows[0]
-      usingDb = true
-      console.log('Inserted into DB:', newTodo)
-      return res.status(201).json(newTodo)
-    } catch (err) {
-      console.error('DB insert failed:', err.message)
-      if (!usingDb) console.log('Using in-memory todos only.')
-    }
-  }
-
-  // In-memory fallback
-  const newTodo = {
-    id: todos.length ? todos[todos.length - 1].id + 1 : 1,
-    text: cleanText
-  }
-  todos.push(newTodo)
+  const newTodo = await createTodo(text.trim())
   res.status(201).json(newTodo)
-})
+}))
 
-// DB status endpoint
-app.get('/todos/status', (req, res) => {
-  res.json({ todos_count: todos.length, db_connected: usingDb })
-})
+app.delete('/todos/:id', asyncHandler(async (req, res) => {
+  const id = Number(req.params.id)
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' })
+
+  const deleted = await deleteTodoById(id)
+  if (!deleted) return res.status(404).json({ error: 'Todo not found' })
+  res.status(204).end()
+}))
+
+// ---- Error Handlers ----
+const unknownEndpoint = (req, res) => {
+  res.status(404).json({ error: 'unknown endpoint' })
+}
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message)
+  if (err.name === 'CastError') return res.status(400).json({ error: 'malformatted id' })
+  res.status(500).json({ error: 'Internal server error' })
+}
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
+
+const PORT = process.env.TODO_BACKEND_PORT
+if (!PORT) throw new Error('TODO_BACKEND_PORT environment variable is required')
 
 app.listen(PORT, () => console.log(`Todo-backend running on port ${PORT}`))

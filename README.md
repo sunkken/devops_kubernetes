@@ -29,3 +29,4 @@
 - [2.7: Stateful applications](https://github.com/sunkken/devops_kubernetes/tree/2.7/log-output)
 - [2.8: The Project, Step 11](https://github.com/sunkken/devops_kubernetes/tree/2.8/the-project)
 - [2.9: The Project, Step 12](https://github.com/sunkken/devops_kubernetes/tree/2.9/the-project)
+- [2.10: The Project, Step 13](https://github.com/sunkken/devops_kubernetes/tree/2.10/the-project)
