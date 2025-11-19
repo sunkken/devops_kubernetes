@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: exercises
+  name: pingpong-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pingpong-app
+  template:
+    metadata:
+      labels:
+        app: pingpong-app
+    spec:
+      containers:
+        - name: pingpong-app
+          image: sunqen/pingpong-app
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3001 # port where app receives connections
+          envFrom:
+          - configMapRef:
+              name: log-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: exercises
+  name: pingpong-app-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: pingpong-app # App-name in deployment.yaml.
+  ports:
+    - port: 80 # Port where service receives connections (from user or other app). Used to be 3457 in k3d setup
+      protocol: TCP
+      targetPort: 3001 # port where we connect to deployed app

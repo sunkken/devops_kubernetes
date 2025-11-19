@@ -1,6 +1,7 @@
 # DevOps with Kubernetes
 
 ## Exercises
+#### FYI, exercise numbers are consistently one lower than chapter number.
 
 ### Chapter 2
 
@@ -30,3 +31,7 @@
 - [2.8: The Project, Step 11](https://github.com/sunkken/devops_kubernetes/tree/2.8/the-project)
 - [2.9: The Project, Step 12](https://github.com/sunkken/devops_kubernetes/tree/2.9/the-project)
 - [2.10: The Project, Step 13](https://github.com/sunkken/devops_kubernetes/tree/2.10/the-project)
+
+### Chapter 4
+
+- [3.1: Pingpong GKE](https://github.com/sunkken/devops_kubernetes/tree/3.1/log-output)
