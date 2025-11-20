@@ -25,7 +25,3 @@ spec:
             while true; do sleep 3600; done
         tty: true
         stdin: true
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "100m"
