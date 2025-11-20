@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: exercises
+  name: log-output
+  labels:
+    app: log-output
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      containers:
+        - name: log-output
+          image: sunqen/log-output:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: info-file
+              mountPath: "/config"
+          envFrom:
+          - configMapRef:
+              name: log-config      
+      volumes:
+        - name: info-file
+          configMap:
+            name: log-config
+            items:
+              - key: information.txt
+                path: information.txt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: exercises
+  name: log-output-svc
+spec:
+  type: NodePort
+  selector:
+    app: log-output
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 3000
+

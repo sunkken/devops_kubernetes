@@ -35,3 +35,4 @@
 ### Chapter 4
 
 - [3.1: Pingpong GKE](https://github.com/sunkken/devops_kubernetes/tree/3.1/log-output)
+- [3.2: Back to Ingress](https://github.com/sunkken/devops_kubernetes/tree/3.2/log-output)

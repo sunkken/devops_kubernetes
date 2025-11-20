@@ -29,10 +29,10 @@ metadata:
   namespace: exercises
   name: pingpong-app-svc
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: pingpong-app # App-name in deployment.yaml.
   ports:
-    - port: 80 # Port where service receives connections (from user or other app). Used to be 3457 in k3d setup
+    - port: 80 # Port where svc receives connections (from user or other app). Used to be 3457 in k3d setup
       protocol: TCP
-      targetPort: 3001 # port where we connect to deployed app
+      targetPort: 3001 # port where svc connects to deployed app

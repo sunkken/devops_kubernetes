@@ -1,3 +1,4 @@
+
 const path = require('path')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
@@ -14,9 +15,8 @@ if (missing.length) {
 
 const app = express()
 let counter = 0
-let lastDbError = false // <-- track DB error
+let lastDbError = false
 
-// ---- Postgres setup ----
 let db
 if (process.env.USE_DB === 'true') {
   db = new Pool({
@@ -24,25 +24,50 @@ if (process.env.USE_DB === 'true') {
     port: process.env.PG_PORT,
     user: process.env.PG_USER,
     password: process.env.PG_PASSWORD,
-    database: process.env.PG_DB,
+    database: process.env.PG_DB
   })
 
-  db.query('SELECT pings FROM pingpong_counter WHERE id=1')
-    .then(res => {
-      if (res.rows.length) {
-        counter = res.rows[0].pings
+  // ---- Improved DB initialization with retries ----
+  async function initCounter() {
+    if (!db) return
+
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      try {
+        // Ensure table exists
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS pingpong_counter (
+            id INT PRIMARY KEY,
+            pings INT
+          )
+        `)
+        await db.query(`
+          INSERT INTO pingpong_counter (id, pings)
+          VALUES (1, 0)
+          ON CONFLICT (id) DO NOTHING
+        `)
+
+        // Fetch current counter
+        const res = await db.query('SELECT pings FROM pingpong_counter WHERE id=1')
+        counter = res.rows.length ? res.rows[0].pings : 0
         console.log(`Counter initialized from DB: ${counter}`)
-      } else {
-        console.log('No row found in DB yet. Starting at 0.')
+        return
+      } catch (err) {
+        console.error(`DB init attempt ${attempt} failed: ${err.message}`)
+        await new Promise(r => setTimeout(r, 2000)) // wait 2s before retry
       }
-    })
-    .catch(err => {
-      console.error('Error connecting to DB:', err.message)
-      lastDbError = true
-    })
+    }
+    console.warn('DB initialization failed after retries. Starting at 0.')
+    lastDbError = true
+  }
+
+  initCounter()
 }
 
-// ---- User-facing increment endpoint ----
+// ---- Routes ----
+app.get('/', (req, res) => {
+  res.send('Pingpong service OK')
+})
+
 app.get('/pingpong', async (req, res) => {
   counter += 1
   console.log(`Ping / Pongs: ${counter}`)
@@ -61,7 +86,6 @@ app.get('/pingpong', async (req, res) => {
   res.send(counter.toString())
 })
 
-// ---- Internal read-only endpoint ----
 app.get('/pings', (req, res) => {
   res.json({
     counter,
