@@ -12,5 +12,5 @@ gcloud container clusters create dwk-cluster --zone=europe-north1-b --cluster-ve
 
 ## Enable Gateway API:
 ```bash
-$ gcloud container clusters update clustername --location=europe-north1-b --gateway-api=standard
+$ gcloud container clusters update dwk-cluster --location=europe-north1-b --gateway-api=standard
 ```

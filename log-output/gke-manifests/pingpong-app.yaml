@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: exercises
   name: pingpong-app
 spec:
   replicas: 3
@@ -26,10 +25,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: exercises
   name: pingpong-app-svc
+  annotations:
+    cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: pingpong-app # App-name in deployment.yaml.
   ports:

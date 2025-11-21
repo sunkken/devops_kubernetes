@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: exercises
   name: log-output
   labels:
     app: log-output
@@ -38,10 +37,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: exercises
   name: log-output-svc
+  annotations:
+    cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: log-output
   ports:
