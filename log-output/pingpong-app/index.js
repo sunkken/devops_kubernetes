@@ -64,11 +64,7 @@ if (process.env.USE_DB === 'true') {
 }
 
 // ---- Routes ----
-app.get('/', (req, res) => {
-  res.send('Pingpong service OK')
-})
-
-app.get('/pingpong', async (req, res) => {
+app.get('/', async (req, res) => {
   counter += 1
   console.log(`Ping / Pongs: ${counter}`)
 

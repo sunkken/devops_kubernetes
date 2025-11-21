@@ -31,6 +31,10 @@ spec:
         - path:
             type: PathPrefix
             value: /pingpong
+      filters:
+        - type: RequestPathModifier
+          requestPathModifier:
+            replacePrefixMatch: /
       backendRefs:
         - name: pingpong-app-svc
           port: 80
