@@ -5,6 +5,7 @@ resources:
   - todo-gateway.yaml
   - todo-config.yaml
   - tododb.yaml
+  - todo-app-pvc.yaml
   - todo-backend.yaml
   - todo-app.yaml
   - todo-cronjob.yaml
