@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: project
+resources:
+  - todo-gateway.yaml
+  - todo-config.yaml
+  - tododb.yaml
+  - todo-backend.yaml
+  - todo-app.yaml
+  - todo-cronjob.yaml
+
+images:
+  - name: PROJECT/todo-app
+    newName: sunqen/todo-app
+  - name: PROJECT/todo-app-writer
+    newName: sunqen/todo-app-writer
+  - name: PROJECT/todo-backend
+    newName: sunqen/todo-backend
+  - name: PROJECT/todo-cronjob
+    newName: sunqen/todo-cronjob

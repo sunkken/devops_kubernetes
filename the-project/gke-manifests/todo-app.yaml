@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-dep
+  labels:
+    app: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      volumes:
+        - name: image-storage
+          persistentVolumeClaim:
+            claimName: todo-app-claim
+      containers:
+        - name: todo-app-writer
+          image: PROJECT/todo-app-writer
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: image-storage
+              mountPath: /usr/src/app/image
+          envFrom:
+          - configMapRef:
+              name: todo-config
+        - name: todo-app
+          image: PROJECT/todo-app
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: image-storage
+              mountPath: /usr/src/app/image
+          envFrom:
+            - configMapRef:
+                name: todo-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: todo-app
+  ports:
+    - port: 1234
+      protocol: TCP
+      targetPort: 3000

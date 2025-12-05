@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: todo-random-wiki-cron
+spec:
+  schedule: "0 * * * *"   # every hour
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: todo-cronjob
+              image: PROJECT/todo-cronjob
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef:
+                    name: todo-config
