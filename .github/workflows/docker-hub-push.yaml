@@ -1,9 +1,7 @@
 name: Build and Push Course Images
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   APP_LIST: "todo-app todo-app-writer todo-backend todo-cronjob log-output pingpong-app"

@@ -2,13 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: project
 resources:
-  - todo-gateway.yaml
-  - todo-config.yaml
-  - tododb.yaml
-  - todo-app-pvc.yaml
-  - todo-backend.yaml
-  - todo-app.yaml
-  - todo-cronjob.yaml
+  - gke-manifests/todo-gateway.yaml
+  - gke-manifests/todo-config.yaml
+  - gke-manifests/tododb.yaml
+  - gke-manifests/todo-app-pvc.yaml
+  - gke-manifests/todo-backend.yaml
+  - gke-manifests/todo-app.yaml
+  - gke-manifests/todo-cronjob.yaml
 
 images:
   - name: PROJECT/todo-app
