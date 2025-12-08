@@ -41,3 +41,4 @@
 - [3.5: The Project, Step 14](https://github.com/sunkken/devops_kubernetes/tree/3.5/the-project)
 - [3.6: The Project, Step 15](https://github.com/sunkken/devops_kubernetes/tree/3.6/the-project)
 - [3.7: The Project, Step 16](https://github.com/sunkken/devops_kubernetes/tree/3.7)
+- [3.8: The Project, Step 17](https://github.com/sunkken/devops_kubernetes/tree/3.8)
