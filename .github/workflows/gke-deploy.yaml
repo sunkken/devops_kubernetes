@@ -2,8 +2,6 @@ name: Deploy to GKE
 
 on:
   push:
-    branches:
-      - main
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
@@ -69,10 +67,14 @@ jobs:
 
       - name: Deploy
         run: |
+          NAMESPACE=${GITHUB_REF#refs/heads/}
+          [ "$NAMESPACE" = "main" ] && NAMESPACE="project"
+          kubectl create namespace $NAMESPACE || true
           kustomize edit set image PROJECT/todo-app=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-app-writer=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-backend=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-cronjob=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
+          kustomize edit set namespace $NAMESPACE
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment/todo-app-dep -n project
-          kubectl get services -n project -o wide
+          kubectl rollout status deployment/todo-app-dep -n $NAMESPACE
+          kubectl get services -n $NAMESPACE -o wide
