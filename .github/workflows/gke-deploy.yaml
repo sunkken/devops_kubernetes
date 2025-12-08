@@ -2,6 +2,8 @@ name: Deploy to GKE
 
 on:
   push:
+    branches:
+      - '**'
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
