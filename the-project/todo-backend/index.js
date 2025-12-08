@@ -41,10 +41,11 @@ const missingVars = dbVars.filter(v => !process.env[v])
 
 let db = null
 let usingDb = false
+const isProd = process.env.NODE_ENV === 'production'
 
-if (missingVars.length) {
-  console.warn(`Running without database, missing env vars: ${missingVars.join(', ')}`)
-} else {
+const sleep = (ms) => new Promise(res => setTimeout(res, ms))
+
+async function initDbWithRetry() {
   db = new Pool({
     host: process.env.TODO_DB_HOST,
     port: process.env.TODO_DB_PORT,
@@ -53,20 +54,37 @@ if (missingVars.length) {
     database: process.env.TODO_DB_NAME,
   })
 
-  db.query('SELECT * FROM todos ORDER BY id ASC')
-    .then(res => {
-      if (res.rows.length) {
-        todos = res.rows
-        usingDb = true
-        console.log('Todos loaded from DB:', todos)
-      } else {
-        console.log('No todos in DB yet. Using in-memory defaults.')
+  const maxAttempts = isProd ? 10 : 1
+  const delayMs = 3000
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      // Ensure table exists before we start serving traffic
+      await db.query(`CREATE TABLE IF NOT EXISTS todos (
+        id SERIAL PRIMARY KEY,
+        text TEXT NOT NULL
+      )`)
+
+      const res = await db.query('SELECT * FROM todos ORDER BY id ASC')
+      todos = res.rows
+      usingDb = true
+      console.log(`DB ready after ${attempt} attempt(s). Loaded ${todos.length} todos.`)
+      return
+    } catch (err) {
+      console.error(`DB init failed (attempt ${attempt}/${maxAttempts}):`, err.message)
+      if (attempt === maxAttempts) {
+        console.error(`Giving up on DB (mode: ${isProd ? 'prod' : 'dev'}), using in-memory todos only.`)
+        return
       }
-    })
-    .catch(err => {
-      console.error('Error querying DB:', err.message)
-      console.log('Using in-memory todos only.')
-    })
+      await sleep(delayMs)
+    }
+  }
+}
+
+if (missingVars.length) {
+  console.warn(`Running without database, missing env vars: ${missingVars.join(', ')}`)
+} else {
+  initDbWithRetry()
 }
 
 // ---- Async helper ----
