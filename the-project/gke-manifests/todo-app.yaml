@@ -24,7 +24,7 @@ spec:
               cpu: 25m
               memory: 32Mi
             limits:
-              cpu: 100m
+              cpu: 75m
               memory: 128Mi
           volumeMounts:
             - name: image-storage
@@ -40,7 +40,7 @@ spec:
               cpu: 25m
               memory: 32Mi
             limits:
-              cpu: 100m
+              cpu: 75m
               memory: 128Mi
           ports:
             - containerPort: 3000

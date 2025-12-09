@@ -21,8 +21,8 @@ spec:
               cpu: 75m
               memory: 160Mi
             limits:
-              cpu: 400m
-              memory: 384Mi
+              cpu: 300m
+              memory: 512Mi
           env:
             - name: POSTGRES_DB
               value: tododb
