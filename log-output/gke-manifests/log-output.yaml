@@ -18,6 +18,13 @@ spec:
         - name: log-output
           image: sunqen/log-output:latest
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
           ports:
             - containerPort: 3000
           volumeMounts:

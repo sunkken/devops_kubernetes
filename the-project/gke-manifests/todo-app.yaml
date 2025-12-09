@@ -19,6 +19,13 @@ spec:
         - name: todo-app-writer
           image: PROJECT/todo-app-writer
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
           volumeMounts:
             - name: image-storage
               mountPath: /usr/src/app/image
@@ -28,6 +35,13 @@ spec:
         - name: todo-app
           image: PROJECT/todo-app
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
           ports:
             - containerPort: 3000
           volumeMounts:

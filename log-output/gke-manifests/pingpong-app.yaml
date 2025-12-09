@@ -16,6 +16,13 @@ spec:
         - name: pingpong-app
           image: sunqen/pingpong-app
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
           ports:
             - containerPort: 3001 # port where app receives connections
           envFrom:

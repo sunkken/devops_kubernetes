@@ -16,6 +16,13 @@ spec:
       containers:
         - name: tododb
           image: postgres:16-alpine
+          resources:
+            requests:
+              cpu: 75m
+              memory: 160Mi
+            limits:
+              cpu: 400m
+              memory: 384Mi
           env:
             - name: POSTGRES_DB
               value: tododb
