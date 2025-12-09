@@ -18,10 +18,10 @@ spec:
               resources:
                 requests:
                   cpu: 25m
-                  memory: 32Mi
-                limits:
-                  cpu: 75m
                   memory: 64Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
               env:
                 - name: URL
                   value: "postgres://$(TODO_DB_USER):$(TODO_DB_PASS)@$(TODO_DB_HOST):$(TODO_DB_PORT)/$(TODO_DB_NAME)"
