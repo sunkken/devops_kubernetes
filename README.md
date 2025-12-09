@@ -44,3 +44,4 @@
 - [3.8: The Project, Step 17](https://github.com/sunkken/devops_kubernetes/tree/3.8)
 - [3.9: DBaaS vs DIY](https://github.com/sunkken/devops_kubernetes/tree/3.9/the-project)
 - [3.10: The Project, Step 18](https://github.com/sunkken/devops_kubernetes/tree/3.10/the-project)
+- [3.11: The Project, Step 19](https://github.com/sunkken/devops_kubernetes/tree/3.11/the-project)
