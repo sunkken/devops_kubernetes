@@ -84,5 +84,5 @@ jobs:
           kustomize edit set image PROJECT/tododb-backup=$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
           kustomize edit set namespace $NAMESPACE
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment/todo-app-dep -n $NAMESPACE
+          kubectl rollout status statefulset/todo-app -n $NAMESPACE
           kubectl get services -n $NAMESPACE -o wide

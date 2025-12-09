@@ -4,7 +4,6 @@ resources:
   - gke-manifests/todo-gateway.yaml
   - gke-manifests/todo-config.yaml
   - gke-manifests/tododb.yaml
-  - gke-manifests/todo-app-pvc.yaml
   - gke-manifests/todo-backend.yaml
   - gke-manifests/todo-app.yaml
   - gke-manifests/todo-cronjob.yaml

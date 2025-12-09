@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: todo-app-dep
+  name: todo-app
   labels:
     app: todo-app
 spec:
   replicas: 1
+  serviceName: todo-app-svc
   selector:
     matchLabels:
       app: todo-app
@@ -14,10 +15,6 @@ spec:
       labels:
         app: todo-app
     spec:
-      volumes:
-        - name: image-storage
-          persistentVolumeClaim:
-            claimName: todo-app-claim
       containers:
         - name: todo-app-writer
           image: PROJECT/todo-app-writer
@@ -39,6 +36,14 @@ spec:
           envFrom:
             - configMapRef:
                 name: todo-config
+  volumeClaimTemplates:
+    - metadata:
+        name: image-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
