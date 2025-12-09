@@ -14,3 +14,14 @@ gcloud container clusters create dwk-cluster --zone=europe-north1-b --cluster-ve
 ```bash
 $ gcloud container clusters update dwk-cluster --location=europe-north1-b --gateway-api=standard
 ```
+
+# Move over to two e2-medium nodes for better performance:
+```bash
+gcloud container node-pools create e2-medium-pool \
+  --cluster=dwk-cluster \
+  --zone=europe-north1-b \
+  --machine-type=e2-medium \
+  --num-nodes=2 \
+  --disk-size=32
+gcloud container node-pools delete default-pool --cluster=dwk-cluster --zone=europe-north1-b
+```

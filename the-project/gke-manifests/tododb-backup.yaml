@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tododb-backup
+spec:
+  schedule: "0 0 * * *"  # every day at midnight UTC
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: PROJECT/tododb-backup
+              imagePullPolicy: Always
+              env:
+                - name: URL
+                  value: "postgres://$(TODO_DB_USER):$(TODO_DB_PASS)@$(TODO_DB_HOST):$(TODO_DB_PORT)/$(TODO_DB_NAME)"
+                - name: GCS_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: tododb-backup-secret
+                      key: gcs-bucket
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: /var/secrets/google/key.json
+              envFrom:
+                - configMapRef:
+                    name: todo-config
+              volumeMounts:
+                - name: gcp-key
+                  mountPath: /var/secrets/google
+          volumes:
+            - name: gcp-key
+              secret:
+                secretName: tododb-backup-secret
+                items:
+                  - key: gcp-key
+                    path: key.json

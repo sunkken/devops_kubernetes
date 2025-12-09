@@ -28,6 +28,7 @@ Thumbs.db
 
 # Local environment variables
 .env
+tmp
 
 # Python-generated files
 __pycache__/

@@ -63,6 +63,11 @@ jobs:
         run: |
           docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA todo-cronjob
           docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
+      
+      - name: Build and push tododb-backup
+        run: |
+          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA tododb-backup
+          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2.1.0
@@ -76,6 +81,7 @@ jobs:
           kustomize edit set image PROJECT/todo-app-writer=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-backend=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-cronjob=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
+          kustomize edit set image PROJECT/tododb-backup=$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
           kustomize edit set namespace $NAMESPACE
           kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/todo-app-dep -n $NAMESPACE
