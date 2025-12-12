@@ -46,3 +46,7 @@
 - [3.10: The Project, Step 18](https://github.com/sunkken/devops_kubernetes/tree/3.10/the-project)
 - [3.11: The Project, Step 19](https://github.com/sunkken/devops_kubernetes/tree/3.11/the-project)
 - [3.12: The Project, Step 20](https://github.com/sunkken/devops_kubernetes/tree/3.12/the-project/screenshots/3.12-logs.png)
+
+### Chapter 5
+
+- [4.1: Readiness probe](https://github.com/sunkken/devops_kubernetes/tree/4.1/log-output)

@@ -1,25 +1,30 @@
 # Shared Logging App (Ping-Pong + Log Output)
 
-## Setup
-- **Ping-Pong App** (`pingpong-app`) keeps a request counter in memory.  
-- **Log Output** (`log-output`) Serves frontend with timestamped random string and the counter from pingpong-app.
+## Setup Overview
+* **Ping-Pong App** (`pingpong-app`)
+  Tracks a request counter and stores it in Postgres when available.
+* **Log Output** (`log-output`)
+  Serves a frontend that shows a timestamped random string and the current ping counter.
+* **Postgres Database** (`logdb`)
+  StatefulSet used by pingpong-app; optional for local dev (falls back to memory).
 
-## Create Cluster
+## Live Deployments (GKE)
+* Temporary log-output endpoint: http://34.49.176.224/ (subject to change)
+* Temporary ping-pong endpoint: http://34.49.176.224/pingpong (subject to change)
+* Readiness: both services expose `/healthz` and wait for Postgres before becoming ready.
+
+## Local Development (k3d)
+
+### Create Cluster
 ```bash
 k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 ```
 
-<!-- ## Create Persistent Volume
+### Deploy Apps and Database
 ```bash
-docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/logs
-kubectl apply -f persistent-volumes/
-``` -->
-
-## Deploy Apps
-```bash
-kubectl apply -f manifests/
+kubectl apply -f k3d-manifests/
 ```
 
-## Open in Browser
+### Open in Browser
 - Log Output → [http://localhost:8081/logoutput](http://localhost:8081/logoutput)  
 - Ping-Pong App → [http://localhost:8081/logoutput/pingpong](http://localhost:8081/logoutput/pingpong)

@@ -41,6 +41,7 @@ const missingVars = dbVars.filter(v => !process.env[v])
 
 let db = null
 let usingDb = false
+let isReconnecting = false
 const isProd = process.env.NODE_ENV === 'production'
 
 const sleep = (ms) => new Promise(res => setTimeout(res, ms))
@@ -54,8 +55,8 @@ async function initDbWithRetry() {
     database: process.env.TODO_DB_NAME,
   })
 
-  const maxAttempts = isProd ? 10 : 1
-  const delayMs = 3000
+  const maxAttempts = isProd ? 20 : 1
+  const delayMs = 5000
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -68,17 +69,27 @@ async function initDbWithRetry() {
       const res = await db.query('SELECT * FROM todos ORDER BY id ASC')
       todos = res.rows
       usingDb = true
+      isReconnecting = false
       console.log(`DB ready after ${attempt} attempt(s). Loaded ${todos.length} todos.`)
       return
     } catch (err) {
       console.error(`DB init failed (attempt ${attempt}/${maxAttempts}):`, err.message)
+      usingDb = false
       if (attempt === maxAttempts) {
         console.error(`Giving up on DB (mode: ${isProd ? 'prod' : 'dev'}), using in-memory todos only.`)
+        isReconnecting = false
         return
       }
       await sleep(delayMs)
     }
   }
+}
+
+async function reconnectIfNeeded() {
+  if (!db || isReconnecting) return
+  isReconnecting = true
+  console.log('DB connection lost, attempting to reconnect...')
+  await initDbWithRetry()
 }
 
 if (missingVars.length) {
@@ -95,24 +106,47 @@ const asyncHandler = (fn) => (req, res, next) => {
 // ---- Storage helpers ----
 const getAllTodos = async () => {
   if (usingDb && db) {
-    const result = await db.query('SELECT * FROM todos ORDER BY id ASC')
-    return result.rows
+    try {
+      const result = await db.query('SELECT * FROM todos ORDER BY id ASC')
+      return result.rows
+    } catch (err) {
+      console.error('DB query failed in getAllTodos:', err.message)
+      usingDb = false
+      reconnectIfNeeded()
+      return todos
+    }
   }
   return todos
 }
 
 const getTodoById = async (id) => {
   if (usingDb && db) {
-    const result = await db.query('SELECT * FROM todos WHERE id = $1', [id])
-    return result.rows[0] || null
+    try {
+      const result = await db.query('SELECT * FROM todos WHERE id = $1', [id])
+      return result.rows[0] || null
+    } catch (err) {
+      console.error('DB query failed in getTodoById:', err.message)
+      usingDb = false
+      reconnectIfNeeded()
+      return todos.find(t => t.id === id) || null
+    }
   }
   return todos.find(t => t.id === id) || null
 }
 
 const createTodo = async (text) => {
   if (usingDb && db) {
-    const result = await db.query('INSERT INTO todos (text) VALUES ($1) RETURNING *', [text])
-    return result.rows[0]
+    try {
+      const result = await db.query('INSERT INTO todos (text) VALUES ($1) RETURNING *', [text])
+      return result.rows[0]
+    } catch (err) {
+      console.error('DB query failed in createTodo:', err.message)
+      usingDb = false
+      reconnectIfNeeded()
+      const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text }
+      todos.push(newTodo)
+      return newTodo
+    }
   }
   const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text }
   todos.push(newTodo)
@@ -121,8 +155,17 @@ const createTodo = async (text) => {
 
 const deleteTodoById = async (id) => {
   if (usingDb && db) {
-    const result = await db.query('DELETE FROM todos WHERE id = $1 RETURNING *', [id])
-    return result.rows[0] || null
+    try {
+      const result = await db.query('DELETE FROM todos WHERE id = $1 RETURNING *', [id])
+      return result.rows[0] || null
+    } catch (err) {
+      console.error('DB query failed in deleteTodoById:', err.message)
+      usingDb = false
+      reconnectIfNeeded()
+      const index = todos.findIndex(t => t.id === id)
+      if (index === -1) return null
+      return todos.splice(index, 1)[0]
+    }
   }
   const index = todos.findIndex(t => t.id === id)
   if (index === -1) return null

@@ -16,6 +16,7 @@ if (missing.length) {
 const app = express()
 let counter = 0
 let lastDbError = false
+let isReconnecting = false
 
 let db
 if (process.env.USE_DB === 'true') {
@@ -31,7 +32,7 @@ if (process.env.USE_DB === 'true') {
   async function initCounter() {
     if (!db) return
 
-    for (let attempt = 1; attempt <= 10; attempt++) {
+    for (let attempt = 1; attempt <= 20; attempt++) {
       try {
         // Ensure table exists
         await db.query(`
@@ -50,14 +51,27 @@ if (process.env.USE_DB === 'true') {
         const res = await db.query('SELECT pings FROM pingpong_counter WHERE id=1')
         counter = res.rows.length ? res.rows[0].pings : 0
         console.log(`Counter initialized from DB: ${counter}`)
+        lastDbError = false
+        isReconnecting = false
         return
       } catch (err) {
         console.error(`DB init attempt ${attempt} failed: ${err.message}`)
-        await new Promise(r => setTimeout(r, 2000)) // wait 2s before retry
+        lastDbError = true
+        if (attempt < 20) {
+          await new Promise(r => setTimeout(r, 5000)) // wait 5s before retry
+        }
       }
     }
     console.warn('DB initialization failed after retries. Starting at 0.')
     lastDbError = true
+    isReconnecting = false
+  }
+
+  async function reconnectIfNeeded() {
+    if (!db || isReconnecting) return
+    isReconnecting = true
+    console.log('DB connection lost, attempting to reconnect...')
+    await initCounter()
   }
 
   initCounter()
@@ -76,6 +90,8 @@ app.get('/', async (req, res) => {
     } catch (err) {
       console.error('DB update failed:', err.message)
       lastDbError = true
+      // Trigger reconnection in background
+      reconnectIfNeeded()
     }
   }
 
