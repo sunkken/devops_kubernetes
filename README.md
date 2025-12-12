@@ -53,3 +53,4 @@
 - [4.2: The Project, Step 21](https://github.com/sunkken/devops_kubernetes/tree/4.2/the-project)
 - [4.3: Prometheus](https://github.com/sunkken/devops_kubernetes/tree/4.3/screenshots/4.3-query.png)
 - [4.4: Your canary](https://github.com/sunkken/devops_kubernetes/tree/4.4/log-output)
+- [4.5: The Project, Step 22](https://github.com/sunkken/devops_kubernetes/tree/4.5/the-project)
