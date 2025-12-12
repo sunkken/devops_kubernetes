@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: pingpong-app
+  namespace: exercises
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pingpong-app
+  strategy:
+    canary:
+      maxSurge: 0
+      maxUnavailable: 1
+      steps:
+      - setWeight: 50
+      - pause:
+          duration: 30s
+      - analysis:
+          templates:
+          - templateName: cpu-usage-increase
+      - setWeight: 100
+      - pause:
+          duration: 10s
+  template:
+    metadata:
+      labels:
+        app: pingpong-app
+    spec:
+      containers:
+        - name: pingpong-app
+          image: sunqen/pingpong-app
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 150m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          ports:
+            - containerPort: 3001
+          envFrom:
+          - configMapRef:
+              name: log-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingpong-app-svc
+  namespace: exercises
+  annotations:
+    cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
+spec:
+  type: ClusterIP
+  selector:
+    app: pingpong-app
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 3001

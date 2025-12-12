@@ -1,0 +1,85 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: log-output
+  namespace: exercises
+  labels:
+    app: log-output
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: log-output
+  strategy:
+    canary:
+      maxSurge: 0
+      maxUnavailable: 1
+      steps:
+      - setWeight: 50
+      - pause:
+          duration: 30s
+      - analysis:
+          templates:
+          - templateName: cpu-usage-increase
+      - setWeight: 100
+      - pause:
+          duration: 10s
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      containers:
+        - name: log-output
+          image: sunqen/log-output:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 150m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: info-file
+              mountPath: "/config"
+          envFrom:
+          - configMapRef:
+              name: log-config      
+      volumes:
+        - name: info-file
+          configMap:
+            name: log-config
+            items:
+              - key: information.txt
+                path: information.txt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-output-svc
+  namespace: exercises
+  annotations:
+    cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
+spec:
+  type: ClusterIP
+  selector:
+    app: log-output
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 3000

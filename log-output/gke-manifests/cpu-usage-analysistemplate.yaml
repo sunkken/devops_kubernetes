@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cpu-usage-increase
+  namespace: exercises
+spec:
+  metrics:
+  - name: cpu-usage-increase
+    initialDelay: 1m
+    interval: 30s
+    count: 5
+    failureLimit: 2
+    successCondition: result < 0.3
+    provider:
+      prometheus:
+        address: http://prometheus-operated.prometheus.svc.cluster.local:9090
+        query: |
+          scalar(
+            sum(rate(container_cpu_usage_seconds_total{namespace="exercises", container!=""}[5m])) -
+            sum(rate(container_cpu_usage_seconds_total{namespace="exercises", container!=""}[5m] offset 5m))
+          )

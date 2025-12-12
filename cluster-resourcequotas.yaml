@@ -18,10 +18,10 @@ metadata:
   namespace: exercises
 spec:
   hard:
-    requests.cpu: "300m"
-    requests.memory: 512Mi
-    limits.cpu: "600m"
-    limits.memory: 1024Mi
+    requests.cpu: "400m"
+    requests.memory: 768Mi
+    limits.cpu: "1000m"
+    limits.memory: 1536Mi
     persistentvolumeclaims: "2"
 ---
 apiVersion: v1
