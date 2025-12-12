@@ -29,6 +29,15 @@ spec:
           volumeMounts:
             - name: image-storage
               mountPath: /usr/src/app/image
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - find /usr/src/app/image -type f -newermt '15 minutes ago' | grep -q .
+            initialDelaySeconds: 50
+            periodSeconds: 10
+            failureThreshold: 3
           envFrom:
           - configMapRef:
               name: todo-config

@@ -50,3 +50,4 @@
 ### Chapter 5
 
 - [4.1: Readiness probe](https://github.com/sunkken/devops_kubernetes/tree/4.1/log-output)
+- [4.2: The Project, Step 21](https://github.com/sunkken/devops_kubernetes/tree/4.2/the-project)
