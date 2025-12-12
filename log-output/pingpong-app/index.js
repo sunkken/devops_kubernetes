@@ -31,7 +31,7 @@ if (process.env.USE_DB === 'true') {
   async function initCounter() {
     if (!db) return
 
-    for (let attempt = 1; attempt <= 5; attempt++) {
+    for (let attempt = 1; attempt <= 10; attempt++) {
       try {
         // Ensure table exists
         await db.query(`
@@ -87,6 +87,19 @@ app.get('/pings', (req, res) => {
     counter,
     db_ok: !lastDbError
   })
+})
+
+app.get('/healthz', async (req, res) => {
+  if (!db) {
+    return res.status(200).json({ status: 'ok', db: 'disabled' })
+  }
+
+  try {
+    await db.query('SELECT 1')
+    res.status(200).json({ status: 'ok', db: 'connected' })
+  } catch (err) {
+    res.status(503).json({ status: 'unavailable', db: 'error', error: err.message })
+  }
 })
 
 const PORT = process.env.PINGPONG_PORT

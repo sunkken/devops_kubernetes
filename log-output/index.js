@@ -68,5 +68,20 @@ ${pingPongCount}
 res.type('text/plain').send(output)
 })
 
+app.get('/healthz', async (req, res) => {
+  try {
+    const response = await axios.get(PINGPONG_URL, { timeout: 1000 })
+    const data = response.data
+
+    if (data.db_ok === false) {
+      return res.status(503).json({ status: 'degraded', pingpong: 'db_error' })
+    }
+
+    res.status(200).json({ status: 'ok', pingpong: 'connected' })
+  } catch (err) {
+    res.status(503).json({ status: 'unavailable', pingpong: 'unreachable' })
+  }
+})
+
 // ---- Start server ----
 app.listen(PORT, () => console.log(`log-output listening on port ${PORT}`))
