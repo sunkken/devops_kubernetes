@@ -14,25 +14,25 @@ app.use(express.json())
 morgan.token('body', req => JSON.stringify(req.body))
 app.use(
   morgan((tokens, req, res) => {
-    if (req.method === 'POST') {
-      return [
-        tokens.method(req, res),
-        tokens.url(req, res),
-        tokens.status(req, res),
-        tokens.res(req, res, 'content-length'), '-',
-        tokens['response-time'](req, res), 'ms -',
-        tokens.body(req, res)
-      ].join(' ')
+    const parts = [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, 'content-length'), '-',
+      tokens['response-time'](req, res), 'ms'
+    ]
+    if (req.method === 'POST' || req.method === 'PUT') {
+      parts.push('-', tokens.body(req, res))
     }
-    return null
+    return parts.join(' ')
   })
 )
 
 // ---- In-memory fallback todos ----
 let todos = [
-  { id: 1, text: 'Learn JavaScript' },
-  { id: 2, text: 'Learn React' },
-  { id: 3, text: 'Build a project' },
+  { id: 1, text: 'Learn JavaScript', done: 0 },
+  { id: 2, text: 'Learn React', done: 0 },
+  { id: 3, text: 'Build a project', done: 0 },
 ]
 
 // ---- Postgres setup ----
@@ -63,8 +63,11 @@ async function initDbWithRetry() {
       // Ensure table exists before we start serving traffic
       await db.query(`CREATE TABLE IF NOT EXISTS todos (
         id SERIAL PRIMARY KEY,
-        text TEXT NOT NULL
+        text TEXT NOT NULL,
+        done INT NOT NULL DEFAULT 0
       )`)
+      // Ensure legacy tables gain the done column
+      await db.query(`ALTER TABLE todos ADD COLUMN IF NOT EXISTS done INT NOT NULL DEFAULT 0`)
 
       const res = await db.query('SELECT * FROM todos ORDER BY id ASC')
       todos = res.rows
@@ -137,20 +140,37 @@ const getTodoById = async (id) => {
 const createTodo = async (text) => {
   if (usingDb && db) {
     try {
-      const result = await db.query('INSERT INTO todos (text) VALUES ($1) RETURNING *', [text])
+      const result = await db.query('INSERT INTO todos (text, done) VALUES ($1, 0) RETURNING *', [text])
       return result.rows[0]
     } catch (err) {
       console.error('DB query failed in createTodo:', err.message)
       usingDb = false
       reconnectIfNeeded()
-      const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text }
+      const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text, done: 0 }
       todos.push(newTodo)
       return newTodo
     }
   }
-  const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text }
+  const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text, done: 0 }
   todos.push(newTodo)
   return newTodo
+}
+
+const markTodoDone = async (id) => {
+  if (usingDb && db) {
+    try {
+      const result = await db.query('UPDATE todos SET done = 1 WHERE id = $1 RETURNING *', [id])
+      return result.rows[0] || null
+    } catch (err) {
+      console.error('DB query failed in markTodoDone:', err.message)
+      usingDb = false
+      reconnectIfNeeded()
+    }
+  }
+  const todo = todos.find(t => t.id === id)
+  if (!todo) return null
+  todo.done = 1
+  return todo
 }
 
 const deleteTodoById = async (id) => {
@@ -211,6 +231,15 @@ app.post('/todos', asyncHandler(async (req, res) => {
 
   const newTodo = await createTodo(text.trim())
   res.status(201).json(newTodo)
+}))
+
+app.put('/todos/:id', asyncHandler(async (req, res) => {
+  const id = Number(req.params.id)
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' })
+
+  const updated = await markTodoDone(id)
+  if (!updated) return res.status(404).json({ error: 'Todo not found' })
+  res.status(200).json(updated)
 }))
 
 app.delete('/todos/:id', asyncHandler(async (req, res) => {

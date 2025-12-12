@@ -21,6 +21,12 @@ Content-Type: application/json
     "text": "Testing and RESTing"
 }
 
+### Mark first todo as done (id 1)
+PUT http://localhost:5000/todos/1
+
+### Mark non-existing todo (expect 404)
+PUT http://localhost:5000/todos/99999
+
 ### Add todo (over 140 chars)
 POST http://localhost:5000/todos
 Content-Type: application/json

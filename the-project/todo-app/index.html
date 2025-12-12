@@ -19,17 +19,21 @@
     <button id="create-btn">Create todo</button>
   </div>
 
-  <!-- Hardcoded todos -->
-  <ul id="todo-list">
-    <li>Learn JavaScript</li>
-    <li>Learn React</li>
-    <li>Build a project</li>
-  </ul>
+  <section>
+    <h2>Todo</h2>
+    <ul id="todo-list"></ul>
+  </section>
+
+  <section>
+    <h2>Done</h2>
+    <ul id="done-list"></ul>
+  </section>
 
   <footer>DevOps with Kubernetes 2025</footer>
 
 <script>
-const list = document.getElementById('todo-list')
+const todoList = document.getElementById('todo-list')
+const doneList = document.getElementById('done-list')
 const input = document.getElementById('todo-input')
 const btn = document.getElementById('create-btn')
 
@@ -38,15 +42,32 @@ async function loadTodos() {
   try {
     const res = await fetch('/api/todos')
     const todos = await res.json()
-    list.innerHTML = ''
-    todos.forEach(todo => {
-      const li = document.createElement('li')
-      li.textContent = todo.text
-      list.appendChild(li)
-    })
+    renderTodos(todos)
   } catch (err) {
     console.error('Failed to load todos', err)
   }
+}
+
+function renderTodos(todos) {
+  todoList.innerHTML = ''
+  doneList.innerHTML = ''
+
+  todos.filter(t => t.done === 0).forEach(todo => {
+    const li = document.createElement('li')
+    li.textContent = todo.text
+    const btn = document.createElement('button')
+    btn.textContent = 'Mark as done'
+    btn.style.marginLeft = '8px'
+    btn.addEventListener('click', () => markDone(todo.id))
+    li.appendChild(btn)
+    todoList.appendChild(li)
+  })
+
+  todos.filter(t => t.done === 1).forEach(todo => {
+    const li = document.createElement('li')
+    li.textContent = todo.text
+    doneList.appendChild(li)
+  })
 }
 
 // Create new todo
@@ -68,6 +89,17 @@ btn.addEventListener('click', async () => {
     alert('Error creating todo')
   }
 })
+
+async function markDone(id) {
+  try {
+    const res = await fetch(`/api/todos/${id}`, { method: 'PUT' })
+    if (!res.ok) throw new Error('Failed to mark done')
+    loadTodos()
+  } catch (err) {
+    console.error(err)
+    alert('Error updating todo')
+  }
+}
 
 // Initial load
 loadTodos()
