@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express')
 const fs = require('fs')
+const http = require('http')
 const { createProxyMiddleware } = require('http-proxy-middleware')
 
 const app = express()
@@ -33,6 +34,22 @@ app.use('/api', createProxyMiddleware({
     console.log(`[Proxy] ${req.method} ${req.originalUrl} -> ${backendUrl}${req.originalUrl.replace(/^\/api/, '')}`)
   }
 }))
+
+// Health check endpoint
+app.get('/healthz', (req, res) => {
+  const url = new URL(backendUrl.replace(/\/$/, '') + '/healthz')
+  const protocol = url.protocol === 'https:' ? require('https') : http
+
+  protocol.get(url, (resp) => {
+    if (resp.statusCode === 200) {
+      res.status(200).json({ status: 'ok', backend: 'connected' })
+    } else {
+      res.status(503).json({ status: 'unavailable', backend: 'error' })
+    }
+  }).on('error', (err) => {
+    res.status(503).json({ status: 'unavailable', backend: 'error', error: err.message })
+  })
+})
 
 // Serve static images
 app.use(express.static(IMAGE_DIR))

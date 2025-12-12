@@ -177,6 +177,19 @@ app.get('/todos/status', (req, res) => {
   res.status(200).json({ todos_count: todos.length, db_connected: usingDb })
 })
 
+app.get('/healthz', async (req, res) => {
+  if (!db) {
+    return res.status(200).json({ status: 'ok', db: 'disabled' })
+  }
+
+  try {
+    await db.query('SELECT 1')
+    res.status(200).json({ status: 'ok', db: 'connected' })
+  } catch (err) {
+    res.status(503).json({ status: 'unavailable', db: 'error', error: err.message })
+  }
+})
+
 app.get('/todos', asyncHandler(async (req, res) => {
   const allTodos = await getAllTodos()
   res.status(200).json(allTodos)
