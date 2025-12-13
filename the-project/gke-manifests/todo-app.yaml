@@ -34,9 +34,10 @@ spec:
               command:
                 - sh
                 - -c
-                - find /usr/src/app/image -type f -newermt '15 minutes ago' | grep -q .
-            initialDelaySeconds: 50
-            periodSeconds: 10
+                - find /usr/src/app/image -type f -mmin -15 | grep -q .
+            initialDelaySeconds: 120
+            periodSeconds: 300
+            timeoutSeconds: 5
             failureThreshold: 3
           envFrom:
           - configMapRef:

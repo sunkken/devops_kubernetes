@@ -80,6 +80,7 @@ jobs:
           kustomize edit set image PROJECT/todo-app=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-app-writer=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-backend=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
+          # CronJob: push and use GCR image with commit tag
           kustomize edit set image PROJECT/todo-cronjob=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/tododb-backup=$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
           kustomize edit set namespace $NAMESPACE
