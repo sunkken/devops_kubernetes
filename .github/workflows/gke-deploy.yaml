@@ -96,5 +96,9 @@ jobs:
             NATS_URL=nats://my-nats.$NAMESPACE.svc.cluster.local:4222 \
             -n $NAMESPACE
           
+          kubectl set env deployment/todo-broadcaster-dep \
+            NATS_URL=nats://my-nats.$NAMESPACE.svc.cluster.local:4222 \
+            -n $NAMESPACE
+          
           kubectl rollout status statefulset/todo-app -n $NAMESPACE
           kubectl get services -n $NAMESPACE -o wide
