@@ -84,5 +84,11 @@ jobs:
           kustomize edit set image PROJECT/tododb-backup=$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
           kustomize edit set namespace $NAMESPACE
           kustomize build . | kubectl apply -f -
+          
+          # Set NATS_URL based on namespace
+          kubectl set env deployment/todo-backend-dep \
+            NATS_URL=nats://my-nats.$NAMESPACE.svc.cluster.local:4222 \
+            -n $NAMESPACE
+          
           kubectl rollout status statefulset/todo-app -n $NAMESPACE
           kubectl get services -n $NAMESPACE -o wide

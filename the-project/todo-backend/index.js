@@ -6,6 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express')
 const morgan = require('morgan')
 const { Pool } = require('pg')
+const { connect, StringCodec } = require('nats')
 
 const app = express()
 app.use(express.json())
@@ -45,6 +46,81 @@ let isReconnecting = false
 const isProd = process.env.NODE_ENV === 'production'
 
 const sleep = (ms) => new Promise(res => setTimeout(res, ms))
+
+// ---- NATS setup ----
+const NATS_URL = process.env.NATS_URL
+const NATS_SUBJECT = process.env.NATS_SUBJECT || 'todos.events'
+const sc = StringCodec()
+
+let nc = null
+let natsReady = false
+let natsReconnecting = false
+
+async function initNatsWithRetry() {
+  if (!NATS_URL) {
+    console.warn('NATS_URL not set, skipping NATS initialization')
+    natsReady = false
+    return
+  }
+
+  const maxAttempts = isProd ? 20 : 1
+  const delayMs = 5000
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      nc = await connect({ servers: NATS_URL })
+      natsReady = true
+      natsReconnecting = false
+      console.log(`NATS ready after ${attempt} attempt(s). Connected to ${NATS_URL}`)
+      return
+    } catch (err) {
+      console.error(`NATS init failed (attempt ${attempt}/${maxAttempts}):`, err.message)
+      natsReady = false
+      if (attempt === maxAttempts) {
+        console.error(`Giving up on NATS (mode: ${isProd ? 'prod' : 'dev'}), publishing will be skipped.`)
+        natsReconnecting = false
+        return
+      }
+      await sleep(delayMs)
+    }
+  }
+}
+
+async function publishEvent(type, data) {
+  if (!nc || !natsReady) {
+    console.warn(`[NATS] Not connected, skipping publish: type=${type}`)
+    return
+  }
+
+  try {
+    const message = {
+      type,
+      data,
+      meta: {
+        source: 'todo-backend',
+        version: '1.0',
+        timestamp: new Date().toISOString(),
+      }
+    }
+    nc.publish(NATS_SUBJECT, sc.encode(JSON.stringify(message)))
+    console.log(`[NATS] Published ${type} to ${NATS_SUBJECT}`)
+  } catch (err) {
+    console.error(`[NATS] Failed to publish ${type}:`, err.message)
+  }
+}
+
+async function natsReconnectIfNeeded() {
+  if (!nc || natsReconnecting) return
+  natsReconnecting = true
+  console.log('NATS connection lost, attempting to reconnect...')
+  await initNatsWithRetry()
+}
+
+if (!NATS_URL) {
+  console.warn('NATS not configured (NATS_URL missing); NATS messaging disabled.')
+} else {
+  initNatsWithRetry()
+}
 
 async function initDbWithRetry() {
   db = new Pool({
@@ -194,7 +270,7 @@ const deleteTodoById = async (id) => {
 
 // ---- Routes ----
 app.get('/todos/status', (req, res) => {
-  res.status(200).json({ todos_count: todos.length, db_connected: usingDb })
+  res.status(200).json({ todos_count: todos.length, db_connected: usingDb, nats_connected: natsReady })
 })
 
 app.get('/healthz', async (req, res) => {
@@ -230,6 +306,7 @@ app.post('/todos', asyncHandler(async (req, res) => {
   if (text.trim().length > 140) return res.status(400).json({ error: 'Todo text cannot exceed 140 characters' })
 
   const newTodo = await createTodo(text.trim())
+  await publishEvent('todo.created', { id: newTodo.id, text: newTodo.text, done: newTodo.done })
   res.status(201).json(newTodo)
 }))
 
@@ -239,6 +316,7 @@ app.put('/todos/:id', asyncHandler(async (req, res) => {
 
   const updated = await markTodoDone(id)
   if (!updated) return res.status(404).json({ error: 'Todo not found' })
+  await publishEvent('todo.updated', { id: updated.id, done: updated.done })
   res.status(200).json(updated)
 }))
 

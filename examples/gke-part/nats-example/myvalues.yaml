@@ -1,0 +1,27 @@
+# Values for Bitnami NATS install (examples namespace)
+# Uses legacy Bitnami registry because docker.io/bitnami tags were removed.
+
+auth:
+  enabled: false
+
+image:
+  registry: docker.io
+  repository: bitnamilegacy/nats
+  tag: 2.11.8-debian-12-r0
+  pullPolicy: IfNotPresent
+
+metrics:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/nats-exporter
+    tag: 0.15.0-debian-12-r0
+    pullPolicy: IfNotPresent
+  serviceMonitor:
+    enabled: true
+    namespace: prometheus
+    # Add Prometheus release label after install (value depends on your Prometheus selector)
+    labels: {}
+
+persistence:
+  enabled: false

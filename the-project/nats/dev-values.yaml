@@ -1,0 +1,27 @@
+# Bitnami NATS Helm values for dev namespace
+# No authentication (messages are not sensitive)
+# Metrics enabled for Prometheus integration
+
+auth:
+  enabled: false
+
+image:
+  registry: docker.io
+  repository: bitnamilegacy/nats
+  tag: 2.11.8-debian-12-r0
+  pullPolicy: IfNotPresent
+
+metrics:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/nats-exporter
+    tag: 0.15.0-debian-12-r0
+    pullPolicy: IfNotPresent
+  serviceMonitor:
+    enabled: true
+    namespace: prometheus
+    # Will be labeled with release after install via kubectl
+
+persistence:
+  enabled: false
