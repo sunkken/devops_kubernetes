@@ -1,4 +1,12 @@
 services:
+  nats:
+    image: nats:2.11-alpine
+    command: ["-js"]
+    ports:
+      - "4222:4222"
+    environment:
+      - TZ=UTC
+
   todo-backend:
     build:
       context: ./todo-backend
@@ -25,6 +33,7 @@ services:
       - "1234:3000"
     depends_on:
       - todo-backend
+      - nats
 
   todo-app-writer:
     build:
@@ -39,6 +48,7 @@ services:
       - .env
     depends_on:
       - todo-app
+      - nats
 
   todo-cronjob:
     build:
@@ -50,7 +60,20 @@ services:
       - .env
     depends_on:
       - todo-backend
+      - nats
     command: ["node", "index.js"]
+
+  todo-broadcaster:
+    build:
+      context: ./todo-broadcaster
+    image: sunqen/todo-broadcaster:latest
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      WEBHOOK_DRY_RUN: "true"
+    depends_on:
+      - nats
 
 volumes:
   image-volume:

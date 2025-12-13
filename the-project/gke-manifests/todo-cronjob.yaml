@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: todo-random-wiki-cron
 spec:
-  schedule: "0 */6 * * *"   # every 6 hours
+  schedule: "0 */4 * * *"   # every 4 hours
   timeZone: "UTC"
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 2
@@ -16,8 +16,6 @@ spec:
       template:
         spec:
           restartPolicy: Never
-          imagePullSecrets:
-            - name: regcred
           containers:
             - name: todo-cronjob
               image: PROJECT/todo-cronjob
