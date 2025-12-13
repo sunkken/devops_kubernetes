@@ -8,6 +8,7 @@ resources:
   - gke-manifests/todo-app.yaml
   - gke-manifests/todo-cronjob.yaml
   - gke-manifests/tododb-backup.yaml
+  - gke-manifests/todo-broadcaster.yaml
 
 images:
   - name: PROJECT/todo-app
@@ -20,3 +21,5 @@ images:
     newName: sunqen/todo-cronjob
   - name: PROJECT/tododb-backup
     newName: sunqen/tododb-backup
+  - name: PROJECT/todo-broadcaster
+    newName: sunqen/todo-broadcaster

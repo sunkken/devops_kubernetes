@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-broadcaster-dep
+  labels:
+    app: todo-broadcaster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-broadcaster
+  template:
+    metadata:
+      labels:
+        app: todo-broadcaster
+    spec:
+      containers:
+        - name: todo-broadcaster
+          image: PROJECT/todo-broadcaster
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          envFrom:
+            - configMapRef:
+                name: todo-config
+          env:
+            - name: GROUP_NAME
+              value: "todo-broadcaster"
