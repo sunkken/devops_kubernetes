@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  APP_LIST: "todo-app todo-app-writer todo-backend todo-cronjob log-output pingpong-app"
+  APP_LIST: "todo-app todo-app-writer todo-backend todo-cronjob todo-broadcaster log-output pingpong-app"
 
 jobs:
   build:
@@ -16,6 +16,7 @@ jobs:
           - todo-app-writer
           - todo-backend
           - todo-cronjob
+          - todo-broadcaster
           - log-output
           - pingpong-app
 
@@ -45,6 +46,7 @@ jobs:
             [todo-app-writer]="the-project/todo-app/picsum-writer"
             [todo-backend]="the-project/todo-backend"
             [todo-cronjob]="the-project/todo-cronjob"
+            [todo-broadcaster]="the-project/todo-broadcaster"
             [log-output]="log-output"
             [pingpong-app]="log-output/pingpong-app"
           )

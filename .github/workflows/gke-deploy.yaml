@@ -59,20 +59,20 @@ jobs:
           docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA todo-backend
           docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
 
+      - name: Build and push todo-broadcaster
+        run: |
+          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA todo-broadcaster
+          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
+
       - name: Build and push todo-cronjob
         run: |
           docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA todo-cronjob
           docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
-      
+
       - name: Build and push tododb-backup
         run: |
           docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA tododb-backup
           docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
-
-      - name: Build and push todo-broadcaster
-        run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA the-project/todo-broadcaster
-          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2.1.0
