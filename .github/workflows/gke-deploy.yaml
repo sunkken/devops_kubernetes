@@ -71,7 +71,8 @@ jobs:
 
       - name: Build and push todo-broadcaster
         run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA the-project/todo-broadcaster
+          cd the-project
+          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA todo-broadcaster
           docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
 
       - name: Set up Kustomize
