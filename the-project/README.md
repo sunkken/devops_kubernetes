@@ -8,7 +8,7 @@
 * **Todo App** (`todo-app`)
   Serves the todo frontend and current picture.
 * **Todo CronJob** (`todo-cronjob`)
-  Automatically generates a random "Read <Wikipedia URL>" todo every hour and posts it to the backend.
+  Automatically generates a random "Read <Wikipedia URL>" todo once every 6 hours and posts it to the backend.
 * **Postgres Database** (`tododb`)
   StatefulSet that stores todos persistently.
 

@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: todo-random-wiki-cron
 spec:
-  schedule: "0 * * * *"   # every hour
+  schedule: "0 */6 * * *"   # every 6 hours
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 2
   jobTemplate:
