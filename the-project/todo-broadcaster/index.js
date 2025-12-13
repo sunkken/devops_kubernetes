@@ -1,10 +1,12 @@
 import { connect, StringCodec } from 'nats'
-import dotenv from 'dotenv'
+import { fileURLToPath } from 'url'
+import { dirname, resolve } from 'path'
 
-// Load root .env for local dev (same pattern as other services)
-try {
-  dotenv.config({ path: new URL('../.env', import.meta.url).pathname })
-} catch {}
+const __dirname = dirname(fileURLToPath(import.meta.url))
+if (process.env.NODE_ENV !== 'production') {
+  const dotenv = await import('dotenv')
+  dotenv.config({ path: resolve(__dirname, '../.env') })
+}
 
 const NATS_URL = process.env.NATS_URL || 'nats://localhost:4222'
 const SUBJECT = process.env.NATS_SUBJECT || 'todos.events'

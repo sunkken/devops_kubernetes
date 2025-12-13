@@ -46,3 +46,4 @@ env/
 
 # Ruff cache
 .ruff_cache/
+private-key.json
