@@ -46,33 +46,57 @@ jobs:
 
       - name: Build and push todo-app
         run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA todo-app
-          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA
+          if git diff --quiet HEAD~1 HEAD -- the-project/todo-app/; then
+            echo "todo-app unchanged, skipping build"
+          else
+            docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA the-project/todo-app
+            docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA
+          fi
 
       - name: Build and push todo-app-writer
         run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA todo-app/picsum-writer
-          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
+          if git diff --quiet HEAD~1 HEAD -- the-project/todo-app/picsum-writer/; then
+            echo "todo-app-writer unchanged, skipping build"
+          else
+            docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA the-project/todo-app/picsum-writer
+            docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
+          fi
 
       - name: Build and push todo-backend
         run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA todo-backend
-          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
+          if git diff --quiet HEAD~1 HEAD -- the-project/todo-backend/; then
+            echo "todo-backend unchanged, skipping build"
+          else
+            docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA the-project/todo-backend
+            docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
+          fi
 
       - name: Build and push todo-broadcaster
         run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA todo-broadcaster
-          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
+          if git diff --quiet HEAD~1 HEAD -- the-project/todo-broadcaster/; then
+            echo "todo-broadcaster unchanged, skipping build"
+          else
+            docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA the-project/todo-broadcaster
+            docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
+          fi
 
       - name: Build and push todo-cronjob
         run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA todo-cronjob
-          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
+          if git diff --quiet HEAD~1 HEAD -- the-project/todo-cronjob/; then
+            echo "todo-cronjob unchanged, skipping build"
+          else
+            docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA the-project/todo-cronjob
+            docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
+          fi
 
       - name: Build and push tododb-backup
         run: |
-          docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA tododb-backup
-          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
+          if git diff --quiet HEAD~1 HEAD -- tododb-backup/; then
+            echo "tododb-backup unchanged, skipping build"
+          else
+            docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA tododb-backup
+            docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
+          fi
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2.1.0
