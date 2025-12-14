@@ -27,12 +27,30 @@ async function sendWebhook(payload) {
   }
   const isTelegram = WEBHOOK_URL.includes('api.telegram.org/bot')
   const isDiscord = WEBHOOK_URL.includes('discord.com/') || WEBHOOK_URL.includes('discord/webhooks/')
-  const text = payload?.payload?.text || payload?.payload?.message || JSON.stringify(payload.payload || payload)
+  const inner = payload?.payload || payload
+  const eventType = inner?.type || payload?.type || 'todo.event'
+  const source = payload?.source || ''
+  const shortSummary = `${source}${source ? ' — ' : ''}${eventType}`
+
   let body
   if (isTelegram) {
+    const text = inner?.text || inner?.message || JSON.stringify(inner)
     body = { text }
   } else if (isDiscord) {
-    body = { content: text }
+    const pretty = (() => {
+      try { return JSON.stringify(inner, null, 2) } catch { return String(inner) }
+    })()
+    const embed = {
+      title: eventType,
+      description: '```json\n' + pretty + '\n```',
+      color: 0x2f3136,
+      timestamp: payload.timestamp || new Date().toISOString(),
+      footer: { text: source }
+    }
+    body = {
+      content: shortSummary,
+      embeds: [embed]
+    }
   } else {
     body = payload
   }
