@@ -26,8 +26,16 @@ async function sendWebhook(payload) {
     return
   }
   const isTelegram = WEBHOOK_URL.includes('api.telegram.org/bot')
+  const isDiscord = WEBHOOK_URL.includes('discord.com/') || WEBHOOK_URL.includes('discord/webhooks/')
   const text = payload?.payload?.text || payload?.payload?.message || JSON.stringify(payload.payload || payload)
-  const body = isTelegram ? { text } : payload
+  let body
+  if (isTelegram) {
+    body = { text }
+  } else if (isDiscord) {
+    body = { content: text }
+  } else {
+    body = payload
+  }
   const res = await fetch(WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
