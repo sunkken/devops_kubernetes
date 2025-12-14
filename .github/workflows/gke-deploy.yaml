@@ -21,6 +21,8 @@ jobs:
     defaults:
       run:
         working-directory: the-project
+    env:
+      FORCE_BUILD: 'false'
 
     steps:
       - name: Checkout
@@ -48,47 +50,47 @@ jobs:
 
       - name: Build and push todo-app
         run: |
-          if git diff --quiet HEAD~1 HEAD -- todo-app/; then
-            echo "todo-app unchanged, skipping build"
-          else
+          if [ "${FORCE_BUILD}" = "true" ] || ! git diff --quiet HEAD~1 HEAD -- todo-app/; then
             docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA todo-app
             docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA
+          else
+            echo "todo-app unchanged, skipping build"
           fi
 
       - name: Build and push todo-app-writer
         run: |
-          if git diff --quiet HEAD~1 HEAD -- todo-app/picsum-writer/; then
-            echo "todo-app-writer unchanged, skipping build"
-          else
+          if [ "${FORCE_BUILD}" = "true" ] || ! git diff --quiet HEAD~1 HEAD -- todo-app/picsum-writer/; then
             docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA todo-app/picsum-writer
             docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
+          else
+            echo "todo-app-writer unchanged, skipping build"
           fi
 
       - name: Build and push todo-backend
         run: |
-          if git diff --quiet HEAD~1 HEAD -- todo-backend/; then
-            echo "todo-backend unchanged, skipping build"
-          else
+          if [ "${FORCE_BUILD}" = "true" ] || ! git diff --quiet HEAD~1 HEAD -- todo-backend/; then
             docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA todo-backend
             docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
+          else
+            echo "todo-backend unchanged, skipping build"
           fi
 
       - name: Build and push todo-broadcaster
         run: |
-          if git diff --quiet HEAD~1 HEAD -- todo-broadcaster/; then
-            echo "todo-broadcaster unchanged, skipping build"
-          else
+          if [ "${FORCE_BUILD}" = "true" ] || ! git diff --quiet HEAD~1 HEAD -- todo-broadcaster/; then
             docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA todo-broadcaster
             docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
+          else
+            echo "todo-broadcaster unchanged, skipping build"
           fi
 
       - name: Build and push todo-cronjob
         run: |
-          if git diff --quiet HEAD~1 HEAD -- todo-cronjob/; then
-            echo "todo-cronjob unchanged, skipping build"
-          else
+          if [ "${FORCE_BUILD}" = "true" ] || ! git diff --quiet HEAD~1 HEAD -- todo-cronjob/; then
             docker build --tag $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA todo-cronjob
             docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
+          else
+            echo "todo-cronjob unchanged, skipping build"
           fi
 
       - name: Build and push tododb-backup
