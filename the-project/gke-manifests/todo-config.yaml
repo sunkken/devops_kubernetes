@@ -13,3 +13,5 @@ data:
   TODO_DB_NAME: "tododb"
   TODO_DB_USER: "todouser"
   TODO_DB_PASS: "todopass"
+  WEBHOOK_URL: ""
+  WEBHOOK_DRY_RUN: "false"

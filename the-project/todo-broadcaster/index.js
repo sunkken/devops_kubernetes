@@ -25,10 +25,13 @@ async function sendWebhook(payload) {
     console.log('DRY RUN: would post payload', payload)
     return
   }
+  const isTelegram = WEBHOOK_URL.includes('api.telegram.org/bot')
+  const text = payload?.payload?.text || payload?.payload?.message || JSON.stringify(payload.payload || payload)
+  const body = isTelegram ? { text } : payload
   const res = await fetch(WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(body)
   })
   if (!res.ok) {
     const text = await res.text()
