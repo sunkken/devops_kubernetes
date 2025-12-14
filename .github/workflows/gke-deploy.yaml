@@ -128,7 +128,26 @@ jobs:
               kustomize edit set image "$line"
             done < .built_images
           else
-            echo "No images were built; skipping kustomize image updates"
+            echo "No images were built; attempting to preserve currently running images from the cluster"
+            # If nothing was built, populate .built_images from images already running in the namespace
+            # Requires kubectl access (we have credentials earlier in the job)
+            # Read service names from kustomization (images[].name) and query deployments
+            if command -v yq >/dev/null 2>&1; then
+              SERVICES=$(yq -r '.images[].name' kustomization.yaml | sed 's#PROJECT/##')
+            else
+              # Fallback: grep image entries as PROJECT/<name> and extract names
+              SERVICES=$(grep -E "name: PROJECT/" -A1 the-project/kustomization.yaml 2>/dev/null | sed -n 's/.*PROJECT\///p' || true)
+            fi
+            for svc in $SERVICES; do
+              dep="${svc}-dep"
+              img=$(kubectl get deployment "$dep" -n "$NAMESPACE" -o=jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || true)
+              if [ -n "$img" ]; then
+                echo "PROJECT/$svc=$img" >> .built_images
+                echo "Using existing image for $svc -> $img"
+              else
+                echo "No image found for $svc in namespace $NAMESPACE; skipping"
+              fi
+            done
           fi
 
           kustomize edit set namespace $NAMESPACE
