@@ -22,7 +22,7 @@ jobs:
       run:
         working-directory: the-project
     env:
-      FORCE_BUILD: 'false'
+      FORCE_BUILD: 'true'
 
     steps:
       - name: Checkout
