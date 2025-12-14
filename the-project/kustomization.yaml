@@ -12,14 +12,14 @@ resources:
 
 images:
   - name: PROJECT/todo-app
-    newName: sunqen/todo-app
+    newName: PROJECT/todo-app
   - name: PROJECT/todo-app-writer
-    newName: sunqen/todo-app-writer
+    newName: PROJECT/todo-app-writer
   - name: PROJECT/todo-backend
-    newName: sunqen/todo-backend
+    newName: PROJECT/todo-backend
   - name: PROJECT/todo-cronjob
-    newName: sunqen/todo-cronjob
+    newName: PROJECT/todo-cronjob
   - name: PROJECT/tododb-backup
-    newName: sunqen/tododb-backup
+    newName: PROJECT/tododb-backup
   - name: PROJECT/todo-broadcaster
-    newName: sunqen/todo-broadcaster
+    newName: PROJECT/todo-broadcaster
