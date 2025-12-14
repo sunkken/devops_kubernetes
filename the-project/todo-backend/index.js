@@ -30,10 +30,11 @@ app.use(
 )
 
 // ---- In-memory fallback todos ----
+const nowIso = new Date().toISOString()
 let todos = [
-  { id: 1, text: 'Learn JavaScript', done: 0 },
-  { id: 2, text: 'Learn React', done: 0 },
-  { id: 3, text: 'Build a project', done: 0 },
+  { id: 1, text: 'Learn JavaScript', done: false, createdAt: nowIso, updatedAt: nowIso },
+  { id: 2, text: 'Learn React', done: false, createdAt: nowIso, updatedAt: nowIso },
+  { id: 3, text: 'Build a project', done: false, createdAt: nowIso, updatedAt: nowIso },
 ]
 
 // ---- Postgres setup ----
@@ -136,17 +137,35 @@ async function initDbWithRetry() {
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      // Ensure table exists before we start serving traffic
+      // Ensure table exists before we start serving traffic (with timestamps and boolean done)
       await db.query(`CREATE TABLE IF NOT EXISTS todos (
         id SERIAL PRIMARY KEY,
         text TEXT NOT NULL,
-        done INT NOT NULL DEFAULT 0
+        done BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`)
-      // Ensure legacy tables gain the done column
-      await db.query(`ALTER TABLE todos ADD COLUMN IF NOT EXISTS done INT NOT NULL DEFAULT 0`)
+      // Ensure legacy tables gain the new columns safely
+      await db.query(`ALTER TABLE todos ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()`)
+      await db.query(`ALTER TABLE todos ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`)
+      // Migrate existing integer 'done' column (if present) to boolean
+      try {
+        await db.query(`ALTER TABLE todos ALTER COLUMN done TYPE boolean USING (done = 1)`)
+      } catch (e) {
+        // ignore if not applicable
+      }
+      // Ensure done column has sane default
+      try { await db.query(`ALTER TABLE todos ALTER COLUMN done SET DEFAULT false`) } catch (e) {}
 
       const res = await db.query('SELECT * FROM todos ORDER BY id ASC')
-      todos = res.rows
+      // Normalize rows to in-memory shape
+      todos = res.rows.map(r => ({
+        id: r.id,
+        text: r.text,
+        done: !!r.done,
+        createdAt: r.created_at ? r.created_at.toISOString() : nowIso,
+        updatedAt: r.updated_at ? r.updated_at.toISOString() : nowIso
+      }))
       usingDb = true
       isReconnecting = false
       console.log(`DB ready after ${attempt} attempt(s). Loaded ${todos.length} todos.`)
@@ -187,7 +206,7 @@ const getAllTodos = async () => {
   if (usingDb && db) {
     try {
       const result = await db.query('SELECT * FROM todos ORDER BY id ASC')
-      return result.rows
+      return result.rows.map(r => ({ id: r.id, text: r.text, done: !!r.done, createdAt: r.created_at ? r.created_at.toISOString() : null, updatedAt: r.updated_at ? r.updated_at.toISOString() : null }))
     } catch (err) {
       console.error('DB query failed in getAllTodos:', err.message)
       usingDb = false
@@ -202,7 +221,9 @@ const getTodoById = async (id) => {
   if (usingDb && db) {
     try {
       const result = await db.query('SELECT * FROM todos WHERE id = $1', [id])
-      return result.rows[0] || null
+      const r = result.rows[0]
+      if (!r) return null
+      return { id: r.id, text: r.text, done: !!r.done, createdAt: r.created_at ? r.created_at.toISOString() : null, updatedAt: r.updated_at ? r.updated_at.toISOString() : null }
     } catch (err) {
       console.error('DB query failed in getTodoById:', err.message)
       usingDb = false
@@ -214,29 +235,34 @@ const getTodoById = async (id) => {
 }
 
 const createTodo = async (text) => {
+  const createdAt = new Date().toISOString()
   if (usingDb && db) {
     try {
-      const result = await db.query('INSERT INTO todos (text, done) VALUES ($1, 0) RETURNING *', [text])
-      return result.rows[0]
+      const result = await db.query('INSERT INTO todos (text, done, created_at, updated_at) VALUES ($1, $2, $3, $3) RETURNING *', [text, false, createdAt])
+      const r = result.rows[0]
+      return { id: r.id, text: r.text, done: !!r.done, createdAt: r.created_at ? r.created_at.toISOString() : createdAt, updatedAt: r.updated_at ? r.updated_at.toISOString() : createdAt }
     } catch (err) {
       console.error('DB query failed in createTodo:', err.message)
       usingDb = false
       reconnectIfNeeded()
-      const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text, done: 0 }
+      const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text, done: false, createdAt, updatedAt: createdAt }
       todos.push(newTodo)
       return newTodo
     }
   }
-  const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text, done: 0 }
+  const newTodo = { id: todos.length ? todos[todos.length - 1].id + 1 : 1, text, done: false, createdAt, updatedAt: createdAt }
   todos.push(newTodo)
   return newTodo
 }
 
 const markTodoDone = async (id) => {
+  const updatedAt = new Date().toISOString()
   if (usingDb && db) {
     try {
-      const result = await db.query('UPDATE todos SET done = 1 WHERE id = $1 RETURNING *', [id])
-      return result.rows[0] || null
+      const result = await db.query('UPDATE todos SET done = true, updated_at = $2 WHERE id = $1 RETURNING *', [id, updatedAt])
+      const r = result.rows[0]
+      if (!r) return null
+      return { id: r.id, text: r.text, done: !!r.done, createdAt: r.created_at ? r.created_at.toISOString() : null, updatedAt: r.updated_at ? r.updated_at.toISOString() : updatedAt }
     } catch (err) {
       console.error('DB query failed in markTodoDone:', err.message)
       usingDb = false
@@ -245,7 +271,8 @@ const markTodoDone = async (id) => {
   }
   const todo = todos.find(t => t.id === id)
   if (!todo) return null
-  todo.done = 1
+  todo.done = true
+  todo.updatedAt = updatedAt
   return todo
 }
 
@@ -306,7 +333,7 @@ app.post('/todos', asyncHandler(async (req, res) => {
   if (text.trim().length > 140) return res.status(400).json({ error: 'Todo text cannot exceed 140 characters' })
 
   const newTodo = await createTodo(text.trim())
-  await publishEvent('todo.created', { id: newTodo.id, text: newTodo.text, done: newTodo.done })
+  await publishEvent('todo.created', newTodo)
   res.status(201).json(newTodo)
 }))
 
@@ -316,7 +343,7 @@ app.put('/todos/:id', asyncHandler(async (req, res) => {
 
   const updated = await markTodoDone(id)
   if (!updated) return res.status(404).json({ error: 'Todo not found' })
-  await publishEvent('todo.updated', { id: updated.id, done: updated.done })
+  await publishEvent('todo.updated', updated)
   res.status(200).json(updated)
 }))
 

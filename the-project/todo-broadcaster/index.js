@@ -34,21 +34,23 @@ async function sendWebhook(payload) {
 
   let body
   if (isTelegram) {
-    const text = inner?.text || inner?.message || JSON.stringify(inner)
+    const label = eventType === 'todo.created' ? 'A task was created:' : (eventType === 'todo.updated' ? 'A task was updated:' : eventType)
+    const text = label + "\n" + (inner && typeof inner === 'object' ? JSON.stringify(inner, null, 2) : String(inner))
     body = { text }
   } else if (isDiscord) {
     const pretty = (() => {
       try { return JSON.stringify(inner, null, 2) } catch { return String(inner) }
     })()
+    const label = eventType === 'todo.created' ? 'A task was created:' : (eventType === 'todo.updated' ? 'A task was updated:' : eventType)
     const embed = {
-      title: eventType,
+      title: label,
       description: '```json\n' + pretty + '\n```',
       color: 0x2f3136,
       timestamp: payload.timestamp || new Date().toISOString(),
       footer: { text: source }
     }
     body = {
-      content: shortSummary,
+      content: label,
       embeds: [embed]
     }
   } else {

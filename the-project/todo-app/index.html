@@ -52,7 +52,7 @@ function renderTodos(todos) {
   todoList.innerHTML = ''
   doneList.innerHTML = ''
 
-  todos.filter(t => t.done === 0).forEach(todo => {
+  todos.filter(t => !t.done).forEach(todo => {
     const li = document.createElement('li')
     li.textContent = todo.text
     const btn = document.createElement('button')
@@ -63,7 +63,7 @@ function renderTodos(todos) {
     todoList.appendChild(li)
   })
 
-  todos.filter(t => t.done === 1).forEach(todo => {
+  todos.filter(t => t.done).forEach(todo => {
     const li = document.createElement('li')
     li.textContent = todo.text
     doneList.appendChild(li)

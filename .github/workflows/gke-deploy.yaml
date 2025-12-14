@@ -22,7 +22,7 @@ jobs:
       run:
         working-directory: the-project
     env:
-      FORCE_BUILD: 'true'
+      FORCE_BUILD: ${{ vars.FORCE_BUILD }}
 
     steps:
       - name: Checkout
@@ -121,6 +121,7 @@ jobs:
           NAMESPACE=${GITHUB_REF#refs/heads/}
           [ "$NAMESPACE" = "main" ] && NAMESPACE="project"
           kubectl create namespace $NAMESPACE || true
+          # Apply images that were built in this run
           if [ -s .built_images ]; then
             while read -r line; do
               echo "Setting image: $line"
@@ -129,6 +130,7 @@ jobs:
           else
             echo "No images were built; skipping kustomize image updates"
           fi
+
           kustomize edit set namespace $NAMESPACE
           kustomize build . | kubectl apply -f -
           
