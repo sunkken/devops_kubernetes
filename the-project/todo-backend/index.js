@@ -137,7 +137,7 @@ async function initDbWithRetry() {
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      // Ensure table exists before we start serving traffic (with timestamps and boolean done)
+      // Ensure table exists before we start serving traffic (boolean done, timestamps)
       await db.query(`CREATE TABLE IF NOT EXISTS todos (
         id SERIAL PRIMARY KEY,
         text TEXT NOT NULL,
@@ -145,17 +145,6 @@ async function initDbWithRetry() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`)
-      // Ensure legacy tables gain the new columns safely
-      await db.query(`ALTER TABLE todos ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()`)
-      await db.query(`ALTER TABLE todos ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`)
-      // Migrate existing integer 'done' column (if present) to boolean
-      try {
-        await db.query(`ALTER TABLE todos ALTER COLUMN done TYPE boolean USING (done = 1)`)
-      } catch (e) {
-        // ignore if not applicable
-      }
-      // Ensure done column has sane default
-      try { await db.query(`ALTER TABLE todos ALTER COLUMN done SET DEFAULT false`) } catch (e) {}
 
       const res = await db.query('SELECT * FROM todos ORDER BY id ASC')
       // Normalize rows to in-memory shape
