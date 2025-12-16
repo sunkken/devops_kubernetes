@@ -6,15 +6,15 @@ metadata:
 spec:
   project: default
   sources:
-    - repoURL: "git@github.com:sunkken/devops_kubernetes.git"
+    - repoURL: https://github.com/sunkken/devops_kubernetes
       path: "the-project/overlays/staging"
       targetRevision: main
-    - repoURL: "https://charts.bitnami.com/bitnami"
+    - repoURL: https://charts.bitnami.com/bitnami
       chart: nats
       targetRevision: 9.0.28
       helm:
         valueFiles:
-          - nats-values.yaml
+          - $values/nats-values.yaml
   destination:
     server: "https://kubernetes.default.svc"
     namespace: the-project-staging

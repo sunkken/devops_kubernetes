@@ -6,7 +6,6 @@ namespace: the-project-staging
 resources:
 - ./../../base
 - application.yaml
-- nats-values.yaml
 
 patches:
 - path: todo-config.yaml
