@@ -6,4 +6,4 @@ resources:
 images:
 - name: PROJECT/IMAGE
   newName: sunqen/dwk1
-  newTag: 3ff61627b8bb80bcb5894a704dc64ba6d8dad86e
+  newTag: 41cc4c497f3f45762c1251faf985b13a8f3e01ae
