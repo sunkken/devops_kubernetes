@@ -1,15 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - gke-manifests/cpu-usage-analysistemplate.yaml
-  - gke-manifests/gateway-route.yaml
-  - gke-manifests/log-config.yaml
-  - gke-manifests/logdb.yaml
-  - gke-manifests/log-output-rollout.yaml
-  - gke-manifests/pingpong-app-rollout.yaml
+- gke-manifests/cpu-usage-analysistemplate.yaml
+- gke-manifests/gateway-route.yaml
+- gke-manifests/log-config.yaml
+- gke-manifests/logdb.yaml
+- gke-manifests/log-output-rollout.yaml
+- gke-manifests/pingpong-app-rollout.yaml
 
 images:
-  - name: PROJECT/log-output
-    newName: sunqen/log-output:b41bffc
-  - name: PROJECT/pingpong-app
-    newName: sunqen/pingpong-app:b41bffc
+- name: PROJECT/log-output
+  newName: sunqen/log-output
+  newTag: 43cae25c38c8495b0f251724bda8c6cc179fdd63
+- name: PROJECT/pingpong-app
+  newName: sunqen/pingpong-app
+  newTag: 43cae25c38c8495b0f251724bda8c6cc179fdd63
