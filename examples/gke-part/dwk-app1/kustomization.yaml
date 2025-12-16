@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- manifests/deployment.yaml
+- manifests/service.yaml
+images:
+- name: PROJECT/IMAGE
+  newName: sunqen/dwk1
+  newTag: 197a28f4b9a8c7d18e28c84552318b20a94bbd69
