@@ -1,11 +1,9 @@
-name: Build and publish the-project main
+name: Build & Deploy the-project (staging)
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'the-project/**'
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
@@ -13,11 +11,11 @@ env:
   GKE_ZONE: europe-north1-b
   REGISTRY: europe-north1-docker.pkg.dev
   REPOSITORY: dwk-docker-repository
-  BRANCH: ${{ github.ref_name }}      
+  BRANCH: 'staging'  
 
 jobs:
-  build-publish:
-    name: Build, Push, Release the-project
+  build-publish-staging:
+    name: Build, Push, Release the-project to staging
     runs-on: ubuntu-latest
 
     defaults:
@@ -53,7 +51,7 @@ jobs:
         run: |
           kubectl create secret generic todo-webhook \
             --from-literal=WEBHOOK_URL="${{ secrets.TODO_WEBHOOK_URL }}" \
-            --dry-run=client -o yaml | kubectl apply -n project -f -
+            --dry-run=client -o yaml | kubectl apply -n project -f -     
 
       - name: Build and publish todo-app image
         working-directory: the-project/todo-app
@@ -90,28 +88,20 @@ jobs:
           docker build --tag "$IMAGE" .
           docker push "$IMAGE"
 
-      - name: Build and publish tododb-backup image
-        working-directory: the-project/tododb-backup
-        run: |-
-          IMAGE="$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA"
-          docker build --tag "$IMAGE" .
-          docker push "$IMAGE"
-
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
 
-      - name: Update kustomization images
-        working-directory: the-project
+      - name: Update staging overlay kustomization images
+        working-directory: the-project/overlays/staging
         run: |
           kustomize edit set image PROJECT/todo-app=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-app-writer=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-backend=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-broadcaster=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/todo-cronjob=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
-          kustomize edit set image PROJECT/tododb-backup=$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
           
-      - name: commit the-project kustomization.yaml to GitHub
+      - name: commit staging overlay kustomization.yaml changes to GitHub
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'the-project/kustomization.yaml'
+          add: 'the-project/overlays/staging/kustomization.yaml'
           message: New the-project version released ${{ github.sha }}

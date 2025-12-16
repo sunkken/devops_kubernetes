@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: the-project-prod
+
+resources:
+  - ./../../base
+  - tododb-backup.yaml
+
+namePrefix: prod-
+
+images:
+  - name: PROJECT/todo-app
+    newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app
+    newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  - name: PROJECT/todo-app-writer
+    newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app-writer
+    newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  - name: PROJECT/todo-backend
+    newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-backend
+    newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  - name: PROJECT/todo-broadcaster
+    newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-broadcaster
+    newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  - name: PROJECT/todo-cronjob
+    newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-cronjob
+    newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  - name: PROJECT/tododb-backup
+    newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/tododb-backup
+    newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804

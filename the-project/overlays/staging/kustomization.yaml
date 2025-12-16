@@ -1,14 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
+namespace: the-project-staging
+
 resources:
-- gke-manifests/todo-gateway.yaml
-- gke-manifests/todo-config.yaml
-- gke-manifests/tododb.yaml
-- gke-manifests/todo-backend.yaml
-- gke-manifests/todo-app.yaml
-- gke-manifests/todo-cronjob.yaml
-- gke-manifests/tododb-backup.yaml
-- gke-manifests/todo-broadcaster.yaml
+  - ./../../base
+
+patches:
+  - path: todo-config.yaml
+
+namePrefix: staging-
 
 images:
 - name: PROJECT/todo-app
@@ -25,7 +26,4 @@ images:
   newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
 - name: PROJECT/todo-cronjob
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-cronjob
-  newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
-- name: PROJECT/tododb-backup
-  newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/tododb-backup
   newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
