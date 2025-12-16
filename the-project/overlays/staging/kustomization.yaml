@@ -4,26 +4,26 @@ kind: Kustomization
 namespace: the-project-staging
 
 resources:
-  - ./../../base
+- ./../../base
 
 patches:
-  - path: todo-config.yaml
+- path: todo-config.yaml
 
 namePrefix: staging-
 
 images:
 - name: PROJECT/todo-app
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app
-  newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  newTag: staging-bafa7a6810def05e6c8d0feac33abef7de7124b0
 - name: PROJECT/todo-app-writer
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app-writer
-  newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  newTag: staging-bafa7a6810def05e6c8d0feac33abef7de7124b0
 - name: PROJECT/todo-backend
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-backend
-  newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  newTag: staging-bafa7a6810def05e6c8d0feac33abef7de7124b0
 - name: PROJECT/todo-broadcaster
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-broadcaster
-  newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  newTag: staging-bafa7a6810def05e6c8d0feac33abef7de7124b0
 - name: PROJECT/todo-cronjob
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-cronjob
-  newTag: main-b3e4f6ca5c95697a6d498d64a86ccda217bcd804
+  newTag: staging-bafa7a6810def05e6c8d0feac33abef7de7124b0
