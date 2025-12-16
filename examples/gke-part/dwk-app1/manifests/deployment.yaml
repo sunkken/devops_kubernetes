@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: dwk1-app-dep
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: dwk1-app
