@@ -1,6 +1,3 @@
-# Bitnami NATS Helm values for project namespace
-# Identical to dev-values.yaml; will be deployed after dev is validated
-
 auth:
   enabled: false
 
@@ -20,7 +17,6 @@ metrics:
   serviceMonitor:
     enabled: true
     namespace: prometheus
-    # Will be labeled with release after install via kubectl
 
 persistence:
   enabled: false

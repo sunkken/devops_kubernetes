@@ -5,6 +5,8 @@ namespace: the-project-prod
 
 resources:
   - ./../../base
+  - application.yaml
+  - nats-values.yaml
   - tododb-backup.yaml
 
 namePrefix: prod-

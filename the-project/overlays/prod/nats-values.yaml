@@ -1,7 +1,3 @@
-# Bitnami NATS Helm values for dev namespace
-# No authentication (messages are not sensitive)
-# Metrics enabled for Prometheus integration
-
 auth:
   enabled: false
 
@@ -21,7 +17,6 @@ metrics:
   serviceMonitor:
     enabled: true
     namespace: prometheus
-    # Will be labeled with release after install via kubectl
 
 persistence:
   enabled: false

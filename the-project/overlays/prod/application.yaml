@@ -5,10 +5,16 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: "git@github.com:sunkken/devops_kubernetes.git"
-    path: "the-project/overlays/prod"
-    targetRevision: ">=4.8"
+  sources:
+    - repoURL: "git@github.com:sunkken/devops_kubernetes.git"
+      path: "the-project/overlays/prod"
+      targetRevision: ">=4.8"
+    - repoURL: "https://charts.bitnami.com/bitnami"
+      chart: nats
+      targetRevision: 9.0.28
+      helm:
+        valueFiles:
+          - nats-values.yaml
   destination:
     server: "https://kubernetes.default.svc"
     namespace: the-project-prod

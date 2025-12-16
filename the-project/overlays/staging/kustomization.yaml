@@ -4,7 +4,9 @@ kind: Kustomization
 namespace: the-project-staging
 
 resources:
-- ./../../base
+  - ./../../base
+  - application.yaml
+  - nats-values.yaml
 
 patches:
 - path: todo-config.yaml
