@@ -8,11 +8,11 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: resolve(__dirname, '../.env') })
 }
 
-const NATS_URL = process.env.NATS_URL || 'nats://localhost:4222'
 const SUBJECT = process.env.NATS_SUBJECT || 'todos.events'
 const GROUP = process.env.GROUP_NAME || 'todo-broadcaster'
 const WEBHOOK_URL = process.env.WEBHOOK_URL || ''
-const DRY_RUN = (process.env.WEBHOOK_DRY_RUN || '').toLowerCase() === 'true'
+const DRY_RUN = ((process.env.WEBHOOK_DRY_RUN || '').toLowerCase() === 'true') || !WEBHOOK_URL
+const NATS_URL = process.env.NATS_URL || (DRY_RUN ? '' : 'nats://localhost:4222')
 
 if (!WEBHOOK_URL) {
   console.warn('WEBHOOK_URL not set; running in DRY RUN mode (no external posts)')
@@ -68,7 +68,15 @@ async function sendWebhook(payload) {
 }
 
 async function start() {
-  console.log('Broadcaster starting')
+  console.log('Broadcaster starting (dry-run=%s, webhook=%s)', DRY_RUN, WEBHOOK_URL ? 'set' : 'unset')
+
+  // If no NATS URL is configured and we're in dry-run, avoid attempting to connect
+  if (!NATS_URL) {
+    console.log('NATS not configured; running in dry-run / no-NATS mode. No subscription will be created.')
+    setInterval(() => console.log('DRY RUN: broadcaster alive'), 60_000)
+    return
+  }
+
   let nc
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {

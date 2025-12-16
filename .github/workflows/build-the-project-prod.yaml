@@ -51,7 +51,7 @@ jobs:
         run: |
           kubectl create secret generic todo-webhook \
             --from-literal=WEBHOOK_URL="${{ secrets.TODO_WEBHOOK_URL }}" \
-            --dry-run=client -o yaml | kubectl apply -n project -f -
+            --dry-run=client -o yaml | kubectl apply -n the-project-prod -f -
 
       - name: Build and publish todo-app image
         working-directory: the-project/todo-app
@@ -100,6 +100,7 @@ jobs:
 
       - name: Update prod overlay kustomization images
         working-directory: the-project/overlays/prod
+        
         run: |
           kustomize edit set image PROJECT/todo-app=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:${{ env.IMAGE_TAG }}
           kustomize edit set image PROJECT/todo-app-writer=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:${{ env.IMAGE_TAG }}
@@ -107,9 +108,10 @@ jobs:
           kustomize edit set image PROJECT/todo-broadcaster=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:${{ env.IMAGE_TAG }}
           kustomize edit set image PROJECT/todo-cronjob=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:${{ env.IMAGE_TAG }}
           kustomize edit set image PROJECT/tododb-backup=$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:${{ env.IMAGE_TAG }}
-          
+
       - name: commit prod overlay kustomization.yaml changes to GitHub
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'the-project/overlays/prod/kustomization.yaml'
-          message: New the-project version released ${{ github.ref_name }}
+          add: the-project/overlays/prod/kustomization.yaml
+          message: "New the-project production version released ${{ github.ref_name }}"
+          push: "origin HEAD:main"
