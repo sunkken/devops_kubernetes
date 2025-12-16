@@ -15,16 +15,16 @@ namePrefix: staging-
 images:
 - name: PROJECT/todo-app
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app
-  newTag: staging-4cd9a6b1e64c0ca62bd7ba70be63b8a1be941c16
+  newTag: staging-729c4074d15ba125d4b7517c6a79a6fc9eac9d31
 - name: PROJECT/todo-app-writer
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app-writer
-  newTag: staging-4cd9a6b1e64c0ca62bd7ba70be63b8a1be941c16
+  newTag: staging-729c4074d15ba125d4b7517c6a79a6fc9eac9d31
 - name: PROJECT/todo-backend
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-backend
-  newTag: staging-4cd9a6b1e64c0ca62bd7ba70be63b8a1be941c16
+  newTag: staging-729c4074d15ba125d4b7517c6a79a6fc9eac9d31
 - name: PROJECT/todo-broadcaster
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-broadcaster
-  newTag: staging-4cd9a6b1e64c0ca62bd7ba70be63b8a1be941c16
+  newTag: staging-729c4074d15ba125d4b7517c6a79a6fc9eac9d31
 - name: PROJECT/todo-cronjob
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-cronjob
-  newTag: staging-4cd9a6b1e64c0ca62bd7ba70be63b8a1be941c16
+  newTag: staging-729c4074d15ba125d4b7517c6a79a6fc9eac9d31
