@@ -1,0 +1,111 @@
+name: Build and publish the-project main
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'the-project/**'
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: dwk-cluster
+  GKE_ZONE: europe-north1-b
+  REGISTRY: europe-north1-docker.pkg.dev
+  REPOSITORY: dwk-docker-repository
+  BRANCH: ${{ github.ref_name }}      
+
+jobs:
+  build-publish:
+    name: Build, Push, Release the-project
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: the-project 
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Use gcloud CLI
+        run: gcloud info
+
+      - name: Configure Docker for Google Artifact Registry
+        run: gcloud --quiet auth configure-docker europe-north1-docker.pkg.dev
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          project_id: ${{ env.PROJECT_ID }}
+          location: ${{ env.GKE_ZONE }}
+
+      - name: Build and publish todo-app image
+        working-directory: the-project/todo-app
+        run: |-
+          IMAGE="$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA"
+          docker build --tag "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Build and publish todo-app-writer image
+        working-directory: the-project/todo-app/picsum-writer
+        run: |-
+          IMAGE="$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA"
+          docker build --tag "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Build and publish todo-backend image
+        working-directory: the-project/todo-backend
+        run: |-
+          IMAGE="$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA"
+          docker build --tag "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Build and publish todo-broadcaster image
+        working-directory: the-project/todo-broadcaster
+        run: |-
+          IMAGE="$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA"
+          docker build --tag "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Build and publish todo-cronjob image
+        working-directory: the-project/todo-cronjob
+        run: |-
+          IMAGE="$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA"
+          docker build --tag "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Build and publish tododb-backup image
+        working-directory: the-project/tododb-backup
+        run: |-
+          IMAGE="$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA"
+          docker build --tag "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update kustomization images
+        working-directory: the-project
+        run: |
+          kustomize edit set image PROJECT/todo-app=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA
+          kustomize edit set image PROJECT/todo-app-writer=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app-writer:$BRANCH-$GITHUB_SHA
+          kustomize edit set image PROJECT/todo-backend=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA
+          kustomize edit set image PROJECT/todo-broadcaster=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-broadcaster:$BRANCH-$GITHUB_SHA
+          kustomize edit set image PROJECT/todo-cronjob=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-cronjob:$BRANCH-$GITHUB_SHA
+          kustomize edit set image PROJECT/tododb-backup=$REGISTRY/$PROJECT_ID/$REPOSITORY/tododb-backup:$BRANCH-$GITHUB_SHA
+          
+      - name: commit the-project kustomization.yaml to GitHub
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'the-project/kustomization.yaml'
+          message: New the-project version released ${{ github.sha }}
