@@ -56,3 +56,4 @@
 - [4.5: The Project, Step 22](https://github.com/sunkken/devops_kubernetes/tree/4.5/the-project)
 - [4.6: The Project, Step 23](https://github.com/sunkken/devops_kubernetes/tree/4.6/the-project)
 - [4.7: Baby steps to GitOps](https://github.com/sunkken/devops_kubernetes/tree/4.7)
+- [4.8: The Project, Step 24](https://github.com/sunkken/devops_kubernetes/tree/4.8)
