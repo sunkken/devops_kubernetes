@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-publish:
-    name: Build, Push, Release
+    name: Build, Push, Release dwk-app1
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # tag image with the GitHub SHA to get a unique tag
-      - name: Build and publish backend
+      - name: Build and publish dwk-app1
         working-directory: examples/gke-part/dwk-app1
         run: |-
           docker build --tag "sunqen/dwk1:$GITHUB_SHA" .
@@ -32,12 +32,12 @@ jobs:
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
 
-      - name: Update kustomization image
+      - name: Update dwk-app1 kustomization image
         working-directory: examples/gke-part/dwk-app1
         run: kustomize edit set image PROJECT/IMAGE=sunqen/dwk1:$GITHUB_SHA
 
-      - name: commit kustomization.yaml to GitHub
+      - name: commit dwk-app1 kustomization.yaml to GitHub
         uses: EndBug/add-and-commit@v9
         with:
           add: 'examples/gke-part/dwk-app1/kustomization.yaml'
-          message: New version released ${{ github.sha }}
+          message: New dwk-app1 version released ${{ github.sha }}

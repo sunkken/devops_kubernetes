@@ -1,0 +1,51 @@
+name: Build and publish log-output project
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'log-output/**'
+
+jobs:
+  build-publish:
+    name: Build, Push, Release log-output
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # tag image with the GitHub SHA to get a unique tag
+      - name: Build and publish log-output image
+        working-directory: log-output
+        run: |-
+          docker build --tag "sunqen/log-output:$GITHUB_SHA" .
+          docker push "sunqen/log-output:$GITHUB_SHA"
+
+      - name: Build and publish pingpong-app image
+        working-directory: log-output/pingpong-app
+        run: |-
+          docker build --tag "sunqen/pingpong-app:$GITHUB_SHA" .
+          docker push "sunqen/pingpong-app:$GITHUB_SHA"
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update kustomization images
+        working-directory: log-output
+        run: |
+          kustomize edit set image PROJECT/log-output=sunqen/log-output:$GITHUB_SHA
+          kustomize edit set image PROJECT/pingpong-app=sunqen/pingpong-app:$GITHUB_SHA
+
+      - name: commit log-output kustomization.yaml to GitHub
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'log-output/kustomization.yaml'
+          message: New log-output version released ${{ github.sha }}
