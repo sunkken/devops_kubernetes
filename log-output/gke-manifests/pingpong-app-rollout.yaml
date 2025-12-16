@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: pingpong-app
-          image: sunqen/pingpong-app
+          image: PROJECT/pingpong-app
           imagePullPolicy: Always
           resources:
             requests:

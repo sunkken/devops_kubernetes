@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: log-output
-          image: sunqen/log-output:latest
+          image: PROJECT/log-output
           imagePullPolicy: Always
           resources:
             requests:
