@@ -63,6 +63,7 @@ metadata:
   namespace: exercises
   annotations:
     cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
 spec:
   type: ClusterIP
   selector:
