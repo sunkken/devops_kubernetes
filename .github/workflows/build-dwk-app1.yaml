@@ -2,6 +2,8 @@ name: Build and publish dwk-app1
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'examples/gke-part/dwk-app1/**'
 
