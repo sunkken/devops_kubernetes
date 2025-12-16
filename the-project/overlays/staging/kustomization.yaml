@@ -10,8 +10,6 @@ resources:
 patches:
 - path: todo-config.yaml
 
-namePrefix: staging-
-
 images:
 - name: PROJECT/todo-app
   newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app

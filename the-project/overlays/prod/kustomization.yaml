@@ -8,8 +8,6 @@ resources:
   - application.yaml
   - tododb-backup.yaml
 
-namePrefix: prod-
-
 images:
   - name: PROJECT/todo-app
     newName: europe-north1-docker.pkg.dev/dwk-gke-478610/dwk-docker-repository/todo-app

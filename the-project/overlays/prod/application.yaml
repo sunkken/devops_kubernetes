@@ -9,12 +9,13 @@ spec:
     - repoURL: https://github.com/sunkken/devops_kubernetes
       path: "the-project/overlays/prod"
       targetRevision: ">=4.8"
-    - repoURL: "https://charts.bitnami.com/bitnami"
+      ref: git-prod
+    - repoURL: https://charts.bitnami.com/bitnami
       chart: nats
-      targetRevision: 9.0.28
+      targetRevision: "9.0.28"
       helm:
         valueFiles:
-          - $values/nats-values.yaml
+          - $git-prod/the-project/overlays/prod/nats-values.yaml
   destination:
     server: "https://kubernetes.default.svc"
     namespace: the-project-prod
