@@ -15,7 +15,7 @@ spec:
       targetRevision: "9.0.28"
       helm:
         valueFiles:
-          - $git-staging/the-project/overlays/staging/nats-values.yaml
+          - $git-staging/the-project/base/nats-values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: the-project-staging
