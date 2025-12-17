@@ -28,6 +28,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: todo-config
+            - secretRef:
+                name: todo-webhook
           env:
             - name: GROUP_NAME
               value: "todo-broadcaster"              
