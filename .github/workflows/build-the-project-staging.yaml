@@ -51,7 +51,7 @@ jobs:
         run: |
           kubectl create secret generic todo-webhook \
             --from-literal=WEBHOOK_URL="${{ secrets.TODO_WEBHOOK_URL }}" \
-            --dry-run=client -o yaml | kubectl apply -n project -f -     
+            --dry-run=client -o yaml | kubectl apply -n the-project-staging -f -     
 
       - name: Build and publish todo-app image
         working-directory: the-project/todo-app
