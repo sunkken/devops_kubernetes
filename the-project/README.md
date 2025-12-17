@@ -15,8 +15,8 @@
   StatefulSet that stores todos persistently.
 
 ## Live Deployments (GKE)
-* **Main branch** → http://34.49.76.228/ (temporary)
-* **Dev branch** → http://34.36.81.209/ (temporary)
+* **Main branch** → http://34.36.81.209/ (temporary)
+* **Dev branch** → http://34.49.76.228/ (temporary)
 
 Deployments are automated via GitHub Actions on push to any branch.
 
