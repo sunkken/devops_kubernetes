@@ -11,3 +11,4 @@ resources:
 - todo-app.yaml
 - todo-broadcaster.yaml
 - todo-cronjob.yaml
+- nats-svc.yaml
