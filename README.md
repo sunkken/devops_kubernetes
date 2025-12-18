@@ -58,3 +58,5 @@
 - [4.7: Baby steps to GitOps](https://github.com/sunkken/devops_kubernetes/tree/4.7)
 - [4.8: The Project, Step 24](https://github.com/sunkken/devops_kubernetes/tree/4.8)
 - [4.9: The Project, Step 25](https://github.com/sunkken/devops_kubernetes/tree/4.9)
+- [4.10: The Project, The Grande Finale App Repo](https://github.com/sunkken/dwk-project-app-repo)
+- [4.10: The Project, The Grande Finale GitOps Repo](https://github.com/sunkken/dwk-project-gitops-repo/tree/prod)

@@ -1,9 +1,7 @@
 name: Build & Deploy the-project (production)
 
 on:
-  push:
-    tags:
-      - '*.*'
+  workflow_dispatch:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
