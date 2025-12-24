@@ -60,3 +60,6 @@
 - [4.9: The Project, Step 25](https://github.com/sunkken/devops_kubernetes/tree/4.9)
 - [4.10: The Project, The Grande Finale App Repo](https://github.com/sunkken/dwk-project-app-repo)
 - [4.10: The Project, The Grande Finale GitOps Repo](https://github.com/sunkken/dwk-project-gitops-repo/tree/prod)
+
+### Chapter 6
+- [5.2: Getting started with Istio service mesh](https://github.com/sunkken/devops_kubernetes/tree/5.2/istio-samples)
