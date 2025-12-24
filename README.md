@@ -63,3 +63,4 @@
 
 ### Chapter 6
 - [5.2: Getting started with Istio service mesh](https://github.com/sunkken/devops_kubernetes/tree/5.2/istio-samples)
+- [5.3: Log app, the Service Mesh Edition](https://github.com/sunkken/devops_kubernetes/tree/5.3/log-output)

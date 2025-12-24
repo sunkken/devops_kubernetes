@@ -1,4 +1,5 @@
 # yamllint disable-file
+# yaml-language-server: ignore
 ---
 # Source: prometheus/templates/serviceaccount.yaml
 apiVersion: v1

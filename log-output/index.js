@@ -10,6 +10,7 @@ const app = express()
 // ---- Configuration ----
 const PORT = process.env.LOG_PORT
 const PINGPONG_URL = process.env.PINGPONG_URL
+const GREETER_URL = process.env.GREETER_URL || 'http://greeter-svc'
 const MESSAGE = process.env.MESSAGE || 'MESSAGE not set'
 
 // ---- Read ConfigMap file ----
@@ -58,11 +59,21 @@ app.get('/', async (req, res) => {
     pingPongCount = 'Pingpong service not reachable'
   }
 
+  let greeting = 'greetings: Greeter service not reachable'
+  try {
+    const response = await axios.get(GREETER_URL, { timeout: 500 })
+    const data = response.data
+    greeting = `greetings: ${data.message}`
+  } catch {
+    // Keep default
+  }
+
 const output = `
 file content: ${fileContent}
 env variable: MESSAGE=${MESSAGE}
 ${logOutputLine}
 ${pingPongCount}
+${greeting}
 `.trim()
 
 res.type('text/plain').send(output)

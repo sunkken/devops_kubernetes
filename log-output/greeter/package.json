@@ -1,0 +1,13 @@
+{
+  "name": "greeter",
+  "version": "1.0.0",
+  "description": "Simple greeter service",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

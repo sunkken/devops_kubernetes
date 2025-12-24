@@ -1,0 +1,232 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-output
+  namespace: exercises
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      containers:
+      - name: log-output
+        image: sunqen/log-output:latest  # Build locally or use appropriate image
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        envFrom:
+        - configMapRef:
+            name: log-config
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: log-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-output-svc
+  namespace: exercises
+spec:
+  selector:
+    app: log-output
+  ports:
+  - port: 80
+    targetPort: 3000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greeter-dep-v1
+  namespace: exercises
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greeter
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: greeter
+        version: v1
+    spec:
+      containers:
+      - name: greeter
+        image: sunqen/greeter:latest  # Build from greeter/ subfolder
+        ports:
+        - containerPort: 3002
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3002
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3002
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        env:
+        - name: VERSION
+          value: "1"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greeter-dep-v2
+  namespace: exercises
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greeter
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: greeter
+        version: v2
+    spec:
+      containers:
+      - name: greeter
+        image: sunqen/greeter:latest
+        ports:
+        - containerPort: 3002
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3002
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3002
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        env:
+        - name: VERSION
+          value: "2"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: greeter-svc-v1
+  namespace: exercises
+spec:
+  selector:
+    app: greeter
+    version: v1
+  ports:
+  - port: 80
+    targetPort: 3002
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: greeter-svc-v2
+  namespace: exercises
+spec:
+  selector:
+    app: greeter
+    version: v2
+  ports:
+  - port: 80
+    targetPort: 3002
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: greeter-svc
+  namespace: exercises
+spec:
+  selector:
+    app: greeter
+  ports:
+  - port: 80
+    targetPort: 3002
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingpong-app
+  namespace: exercises
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pingpong-app
+  template:
+    metadata:
+      labels:
+        app: pingpong-app
+    spec:
+      containers:
+      - name: pingpong-app
+        image: sunqen/pingpong-app:latest
+        ports:
+        - containerPort: 3001
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3001
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        envFrom:
+        - configMapRef:
+            name: log-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingpong-app-svc
+  namespace: exercises
+spec:
+  selector:
+    app: pingpong-app
+  ports:
+  - port: 80
+    targetPort: 3001

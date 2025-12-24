@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-config
+  namespace: exercises
+data:
+  NODE_ENV: "production"
+  WORKDIR: "/usr/src/app"
+  LOG_PORT: "3000"
+  GREETER_PORT: "3002"
+  PINGPONG_PORT: "3001"
+  PINGPONG_URL: "http://pingpong-app-svc:80/pings"
+  GREETER_URL: "http://greeter-svc"
+  MESSAGE: "hello world"
+  information.txt: |
+    this text is from file
+  PG_HOST: "logdb-svc"
+  PG_PORT: "5432"
+  PG_USER: "loguser"
+  PG_PASSWORD: "logpass"
+  PG_DB: "logdb"
+  USE_DB: "true"
