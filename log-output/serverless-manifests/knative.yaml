@@ -1,0 +1,19 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: pingpong-app
+  namespace: exercises
+spec:
+  template:
+    metadata:
+      labels:
+        app: pingpong-app
+    spec:
+      containers:
+      - name: pingpong-app
+        image: sunqen/pingpong-app:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: log-config-serverless

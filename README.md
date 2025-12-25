@@ -65,3 +65,4 @@
 - [5.2: Getting started with Istio service mesh](https://github.com/sunkken/devops_kubernetes/tree/5.2/istio-samples)
 - [5.3: Log app, the Service Mesh Edition](https://github.com/sunkken/devops_kubernetes/tree/5.3/log-output)
 - [5.6: Trying Serverless](https://github.com/sunkken/devops_kubernetes/tree/5.6/screenshots/5.6-knative.png)
+- [5.7: Deploy to serverless](https://github.com/sunkken/devops_kubernetes/tree/5.7/log-output/)

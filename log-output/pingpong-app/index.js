@@ -118,5 +118,5 @@ app.get('/healthz', async (req, res) => {
   }
 })
 
-const PORT = process.env.PINGPONG_PORT
+const PORT = process.env.PINGPONG_PORT || process.env.SERVERLESS_PORT || 8080
 app.listen(PORT, () => console.log(`Pingpong app running on port ${PORT}`))

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-config-serverless
+  namespace: exercises
+data:
+  SERVERLESS_PORT: "8080"
+  USE_DB: "false"
