@@ -20,10 +20,9 @@
   CronJob that creates daily backups of the Postgres database and stores them in a persistent volume.
 
 ## Live Deployments (GKE)
-* **Prod branch** → http://34.36.81.209/ (temporary)
-* **Staging branch** → http://34.49.76.228/ (temporary)
 
 Deployments are automated via GitHub Actions on push to any branch.
+Live deployments were removed after course completion.
 
 ## Local Development (k3d)
 
